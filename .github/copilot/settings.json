@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "ai-team-sdlc": {
+      "source": {
+        "source": "github",
+        "repo": "devopsabcs-engineering/ai-team-sdlc"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "ai-team-sdlc@ai-team-sdlc": true
+  }
+}

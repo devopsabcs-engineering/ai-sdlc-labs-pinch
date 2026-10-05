@@ -1,0 +1,4 @@
+.copilot-tracking/
+node_modules/
+dist/
+evidence/logs/
