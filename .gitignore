@@ -2,3 +2,4 @@
 node_modules/
 dist/
 evidence/logs/
+evidence/*-console.txt
