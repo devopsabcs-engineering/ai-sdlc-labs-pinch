@@ -7,7 +7,9 @@ startApp(root);
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    const manifest = document.querySelector<HTMLLinkElement>('link[rel="manifest"]');
+    const manifest = document.querySelector<HTMLLinkElement>(
+      'link[rel="manifest"]',
+    );
     if (manifest) {
       void navigator.serviceWorker.register(new URL("sw.js", manifest.href));
     }

@@ -5,8 +5,10 @@ const packageJson = JSON.parse(await readFile(packageUrl, "utf8"));
 const errors = [];
 
 for (const [name, command] of Object.entries(packageJson.scripts)) {
-  if (/\\/.test(command)) errors.push(`${name}: use URL or path APIs instead of backslashes`);
-  if (/[A-Za-z]:[\\/]/.test(command)) errors.push(`${name}: contains an absolute drive path`);
+  if (/\\/.test(command))
+    errors.push(`${name}: use URL or path APIs instead of backslashes`);
+  if (/[A-Za-z]:[\\/]/.test(command))
+    errors.push(`${name}: contains an absolute drive path`);
   if (/(^|\s)(rm|cp|mv|del|copy|move)(\s|$)/.test(command)) {
     errors.push(`${name}: contains a platform-specific file command`);
   }

@@ -36,7 +36,11 @@ export function loadPreferences(
   }
 
   return {
-    locale: languages.some((language) => language.toLowerCase().startsWith("fr")) ? "fr" : "en",
+    locale: languages.some((language) =>
+      language.toLowerCase().startsWith("fr"),
+    )
+      ? "fr"
+      : "en",
     theme: prefersDark ? "dark" : "light",
     unitSystem: "metric",
   };

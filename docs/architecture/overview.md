@@ -25,25 +25,25 @@ approved behavior with typed domain boundaries and tests.
 
 ## Components and interfaces
 
-| Component | Responsibility | Contract |
-|---|---|---|
-| Domain | Parse ingredient lines, scale quantities, convert compatible units, merge list items | Pure functions; no DOM or storage access |
-| Application state | Coordinate recipes, servings, preferences, shopping, and cook position | Immutable updates; persist after successful transitions |
-| Storage adapter | Load, migrate, validate, export, import, and clear local data | Versioned `AppData`; invalid imports do not mutate current data |
-| i18n | Resolve UI keys and format locale-aware numbers | Complete `en`/`fr` catalogs; missing keys fail `i18n-parity` |
-| Views | Render semantic responsive screens and accessible interactions | State in, actions out; no parsing or persistence logic |
-| PWA | Cache the built app shell and expose install metadata | Repository-relative URLs; offline after first successful load |
+| Component         | Responsibility                                                                       | Contract                                                        |
+| ----------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| Domain            | Parse ingredient lines, scale quantities, convert compatible units, merge list items | Pure functions; no DOM or storage access                        |
+| Application state | Coordinate recipes, servings, preferences, shopping, and cook position               | Immutable updates; persist after successful transitions         |
+| Storage adapter   | Load, migrate, validate, export, import, and clear local data                        | Versioned `AppData`; invalid imports do not mutate current data |
+| i18n              | Resolve UI keys and format locale-aware numbers                                      | Complete `en`/`fr` catalogs; missing keys fail `i18n-parity`    |
+| Views             | Render semantic responsive screens and accessible interactions                       | State in, actions out; no parsing or persistence logic          |
+| PWA               | Cache the built app shell and expose install metadata                                | Repository-relative URLs; offline after first successful load   |
 
 There is no HTTP API. Internal use cases are the application boundary:
 
 ```ts
-scaleRecipe(recipeId, servings, unitSystem)
-addRecipeToShoppingList(recipeId, servings, unitSystem)
-setLocale("en" | "fr")
-enterCookMode(recipeId)
-exportData()
-importData(candidate)
-clearAllData()
+scaleRecipe(recipeId, servings, unitSystem);
+addRecipeToShoppingList(recipeId, servings, unitSystem);
+setLocale("en" | "fr");
+enterCookMode(recipeId);
+exportData();
+importData(candidate);
+clearAllData();
 ```
 
 Failures return typed results for the UI to present; they are not converted into success-shaped
@@ -92,26 +92,26 @@ Storage migrations are explicit by `version`.
 
 ## Verification map
 
-| Concern | Evidence |
-|---|---|
-| Parsing, fractions, scaling, conversion, merge, import/export | Vitest unit tests |
-| Catalog completeness | `i18n-parity` gate |
-| Responsive flows, keyboard, locale, cook mode, offline | Playwright bundled Chromium |
-| Installability and performance | Manifest/service-worker checks and throttled smoke |
-| Privacy and supply chain | Runtime network assertion, secret/SAST scan, `npm audit` |
-| Cross-platform scripts | `portable-os` gate; no platform-specific path literals |
+| Concern                                                       | Evidence                                                 |
+| ------------------------------------------------------------- | -------------------------------------------------------- |
+| Parsing, fractions, scaling, conversion, merge, import/export | Vitest unit tests                                        |
+| Catalog completeness                                          | `i18n-parity` gate                                       |
+| Responsive flows, keyboard, locale, cook mode, offline        | Playwright bundled Chromium                              |
+| Installability and performance                                | Manifest/service-worker checks and throttled smoke       |
+| Privacy and supply chain                                      | Runtime network assertion, secret/SAST scan, `npm audit` |
+| Cross-platform scripts                                        | `portable-os` gate; no platform-specific path literals   |
 
 ## Requirement traceability
 
-| PRD requirements | Build slices |
-|---|---|
-| R6, R8 | T-004 portable bilingual shell and gates |
-| R2 | T-005 parsing, scaling, conversion, and formatting |
-| R1, R7 | T-006 recipe library and local data control |
-| R2, R3, R6 | T-007 responsive recipe scaler |
-| R4 | T-008 persistent shopping list |
-| R5 | T-009 accessible cook mode |
-| R7, R8 | T-010 offline PWA and bundled-Chromium coverage |
+| PRD requirements | Build slices                                       |
+| ---------------- | -------------------------------------------------- |
+| R6, R8           | T-004 portable bilingual shell and gates           |
+| R2               | T-005 parsing, scaling, conversion, and formatting |
+| R1, R7           | T-006 recipe library and local data control        |
+| R2, R3, R6       | T-007 responsive recipe scaler                     |
+| R4               | T-008 persistent shopping list                     |
+| R5               | T-009 accessible cook mode                         |
+| R7, R8           | T-010 offline PWA and bundled-Chromium coverage    |
 
 ## Risks
 

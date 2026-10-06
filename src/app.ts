@@ -7,7 +7,12 @@ import {
   type Recipe,
 } from "./data";
 import { translate, type Locale } from "./i18n";
-import { loadPreferences, type Preferences, type Theme, type UnitSystem } from "./preferences";
+import {
+  loadPreferences,
+  type Preferences,
+  type Theme,
+  type UnitSystem,
+} from "./preferences";
 import {
   convertQuantity,
   formatQuantity,
@@ -59,7 +64,9 @@ function lines(value: FormDataEntryValue | null): string[] {
 
 function loadRecipeView(storage: DataStorage): RecipeViewState | undefined {
   try {
-    const saved: unknown = JSON.parse(storage.getItem(RECIPE_VIEW_KEY) ?? "null");
+    const saved: unknown = JSON.parse(
+      storage.getItem(RECIPE_VIEW_KEY) ?? "null",
+    );
     if (
       typeof saved === "object" &&
       saved !== null &&
@@ -86,7 +93,11 @@ function saveRecipeView(storage: DataStorage, state: RecipeViewState): void {
   }
 }
 
-function displayUnit(canonicalQuantity: number, canonicalUnit: Unit, system: UnitSystem): Unit {
+function displayUnit(
+  canonicalQuantity: number,
+  canonicalUnit: Unit,
+  system: UnitSystem,
+): Unit {
   if (canonicalUnit === "count") return "count";
   if (system === "imperial") return canonicalUnit === "g" ? "oz" : "cup";
   if (canonicalUnit === "g" && canonicalQuantity >= 1000) return "kg";
@@ -106,7 +117,11 @@ export function formatIngredient(
     return { amount: "", unit: "", name: line, parsed: false };
   }
 
-  const scaled = scaleQuantity(ingredient.parsed.quantity, baseServings, targetServings);
+  const scaled = scaleQuantity(
+    ingredient.parsed.quantity,
+    baseServings,
+    targetServings,
+  );
   if (scaled === undefined) {
     return { amount: "", unit: "", name: line, parsed: false };
   }
@@ -136,14 +151,23 @@ export function startApp(
         ? () =>
             (
               navigator as Navigator & {
-                wakeLock: { request(type: "screen"): Promise<WakeLockSentinelLike> };
+                wakeLock: {
+                  request(type: "screen"): Promise<WakeLockSentinelLike>;
+                };
               }
             ).wakeLock.request("screen")
         : undefined,
   },
 ): () => Preferences {
-  const defaults = loadPreferences(services.storage, services.languages, services.prefersDark);
-  const opened = RecipeRepository.open(services.storage, createInitialData(defaults));
+  const defaults = loadPreferences(
+    services.storage,
+    services.languages,
+    services.prefersDark,
+  );
+  const opened = RecipeRepository.open(
+    services.storage,
+    createInitialData(defaults),
+  );
   const repository = opened.ok ? opened.value : undefined;
   let preferences = repository?.snapshot().preferences ?? defaults;
   let editingId: string | undefined;
@@ -162,7 +186,8 @@ export function startApp(
   const list = root.querySelector<HTMLElement>("[data-recipe-list]");
   const form = root.querySelector<HTMLFormElement>("[data-recipe-form]");
   const formTitle = root.querySelector<HTMLElement>("[data-form-title]");
-  const cancelButton = root.querySelector<HTMLButtonElement>("[data-cancel-edit]");
+  const cancelButton =
+    root.querySelector<HTMLButtonElement>("[data-cancel-edit]");
   const importInput = root.querySelector<HTMLInputElement>("#import-data");
   const exportLink = root.querySelector<HTMLAnchorElement>("[data-export]");
   const clearButton = root.querySelector<HTMLButtonElement>("[data-clear]");
@@ -184,30 +209,57 @@ export function startApp(
 
   const recipeTitle = root.querySelector<HTMLElement>("[data-recipe-title]");
   const recipeYield = root.querySelector<HTMLElement>("[data-recipe-yield]");
-  const ingredientList = root.querySelector<HTMLElement>("[data-ingredient-list]");
-  const servingOutput = root.querySelector<HTMLOutputElement>("[data-servings]");
-  const decreaseButton = root.querySelector<HTMLButtonElement>("[data-decrease]");
-  const increaseButton = root.querySelector<HTMLButtonElement>("[data-increase]");
-  const unitButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-unit]")];
+  const ingredientList = root.querySelector<HTMLElement>(
+    "[data-ingredient-list]",
+  );
+  const servingOutput =
+    root.querySelector<HTMLOutputElement>("[data-servings]");
+  const decreaseButton =
+    root.querySelector<HTMLButtonElement>("[data-decrease]");
+  const increaseButton =
+    root.querySelector<HTMLButtonElement>("[data-increase]");
+  const unitButtons = [
+    ...root.querySelectorAll<HTMLButtonElement>("[data-unit]"),
+  ];
   const recipeStatus = root.querySelector<HTMLElement>("[data-recipe-status]");
   const measureFill = root.querySelector<HTMLElement>("[data-measure-fill]");
-  const addShoppingButton = root.querySelector<HTMLButtonElement>("[data-add-shopping]");
-  const shoppingTitle = root.querySelector<HTMLElement>("[data-shopping-title]");
-  const shoppingEmpty = root.querySelector<HTMLElement>("[data-shopping-empty]");
+  const addShoppingButton = root.querySelector<HTMLButtonElement>(
+    "[data-add-shopping]",
+  );
+  const shoppingTitle = root.querySelector<HTMLElement>(
+    "[data-shopping-title]",
+  );
+  const shoppingEmpty = root.querySelector<HTMLElement>(
+    "[data-shopping-empty]",
+  );
   const shoppingList = root.querySelector<HTMLElement>("[data-shopping-list]");
-  const clearCheckedButton = root.querySelector<HTMLButtonElement>("[data-clear-checked]");
-  const shoppingStatus = root.querySelector<HTMLElement>("[data-shopping-status]");
-  const startCookButton = root.querySelector<HTMLButtonElement>("[data-start-cook]");
-  const cookDialog = root.querySelector<HTMLDialogElement>("[data-cook-dialog]");
-  const closeCookButton = root.querySelector<HTMLButtonElement>("[data-close-cook]");
+  const clearCheckedButton = root.querySelector<HTMLButtonElement>(
+    "[data-clear-checked]",
+  );
+  const shoppingStatus = root.querySelector<HTMLElement>(
+    "[data-shopping-status]",
+  );
+  const startCookButton =
+    root.querySelector<HTMLButtonElement>("[data-start-cook]");
+  const cookDialog =
+    root.querySelector<HTMLDialogElement>("[data-cook-dialog]");
+  const closeCookButton =
+    root.querySelector<HTMLButtonElement>("[data-close-cook]");
   const cookCount = root.querySelector<HTMLElement>("[data-cook-count]");
   const cookStepHeading = root.querySelector<HTMLElement>("[data-cook-step]");
   const wakeStatus = root.querySelector<HTMLElement>("[data-wake-status]");
-  const previousStepButton = root.querySelector<HTMLButtonElement>("[data-previous-step]");
-  const nextStepButton = root.querySelector<HTMLButtonElement>("[data-next-step]");
-  const cookLocaleButton = root.querySelector<HTMLButtonElement>("[data-cook-locale]");
-  const cookThemeButton = root.querySelector<HTMLButtonElement>("[data-cook-theme]");
-  const cookThemeLabel = root.querySelector<HTMLElement>("[data-cook-theme-label]");
+  const previousStepButton = root.querySelector<HTMLButtonElement>(
+    "[data-previous-step]",
+  );
+  const nextStepButton =
+    root.querySelector<HTMLButtonElement>("[data-next-step]");
+  const cookLocaleButton =
+    root.querySelector<HTMLButtonElement>("[data-cook-locale]");
+  const cookThemeButton =
+    root.querySelector<HTMLButtonElement>("[data-cook-theme]");
+  const cookThemeLabel = root.querySelector<HTMLElement>(
+    "[data-cook-theme-label]",
+  );
   const hasShoppingView =
     addShoppingButton &&
     shoppingTitle &&
@@ -240,7 +292,10 @@ export function startApp(
 
   const announceFailure = (result: DataResult<unknown>): boolean => {
     if (result.ok) return false;
-    dataStatus.textContent = translate(preferences.locale, `data.error.${result.error}`);
+    dataStatus.textContent = translate(
+      preferences.locale,
+      `data.error.${result.error}`,
+    );
     return true;
   };
 
@@ -265,7 +320,8 @@ export function startApp(
 
   const selectedRecipe = (): Recipe | undefined => {
     const available = recipes();
-    const selected = available.find(({ id }) => id === selectedRecipeId) ?? available[0];
+    const selected =
+      available.find(({ id }) => id === selectedRecipeId) ?? available[0];
     if (selected && selected.id !== selectedRecipeId) {
       selectedRecipeId = selected.id;
       targetServings = selected.baseServings;
@@ -278,13 +334,22 @@ export function startApp(
   const renderShopping = (focusId?: string): void => {
     if (!hasShoppingView) return;
     const items = repository?.snapshot().shoppingItems ?? [];
-    const ordered = [...items].sort((left, right) => Number(left.checked) - Number(right.checked));
-    shoppingTitle.textContent = translate(preferences.locale, "shopping.title", {
-      count: items.length,
-    });
+    const ordered = [...items].sort(
+      (left, right) => Number(left.checked) - Number(right.checked),
+    );
+    shoppingTitle.textContent = translate(
+      preferences.locale,
+      "shopping.title",
+      {
+        count: items.length,
+      },
+    );
     shoppingEmpty.textContent = translate(preferences.locale, "shopping.empty");
     shoppingEmpty.hidden = items.length > 0;
-    clearCheckedButton.textContent = translate(preferences.locale, "shopping.clearChecked");
+    clearCheckedButton.textContent = translate(
+      preferences.locale,
+      "shopping.clearChecked",
+    );
     clearCheckedButton.disabled = !items.some(({ checked }) => checked);
     shoppingList.replaceChildren(
       ...ordered.map((item) => {
@@ -307,20 +372,33 @@ export function startApp(
             checkbox.checked = item.checked;
             return;
           }
-          const checkedCount = next.filter((shoppingItem) => shoppingItem.checked).length;
-          shoppingStatus.textContent = translate(preferences.locale, "shopping.collected", {
-            checked: checkedCount,
-            count: next.length,
-          });
+          const checkedCount = next.filter(
+            (shoppingItem) => shoppingItem.checked,
+          ).length;
+          shoppingStatus.textContent = translate(
+            preferences.locale,
+            "shopping.collected",
+            {
+              checked: checkedCount,
+              count: next.length,
+            },
+          );
           renderShopping(item.id);
         });
         const copy = document.createElement("span");
         if (item.quantity !== undefined && item.unit) {
-          const unit = displayUnit(item.quantity, item.unit, preferences.unitSystem);
+          const unit = displayUnit(
+            item.quantity,
+            item.unit,
+            preferences.unitSystem,
+          );
           const converted = convertQuantity(item.quantity, item.unit, unit);
           const amount =
-            converted === undefined ? "" : formatQuantity(converted, unit, preferences.locale);
-          copy.textContent = `${amount}${unit === "count" ? "" : ` ${unit}`} ${item.name}`.trim();
+            converted === undefined
+              ? ""
+              : formatQuantity(converted, unit, preferences.locale);
+          copy.textContent =
+            `${amount}${unit === "count" ? "" : ` ${unit}`} ${item.name}`.trim();
         } else {
           copy.textContent = item.originalText ?? item.name;
         }
@@ -340,7 +418,10 @@ export function startApp(
     if (!hasRecipeView) return;
     const recipe = selectedRecipe();
     if (!recipe) {
-      recipeTitle.textContent = translate(preferences.locale, "recipe.emptyTitle");
+      recipeTitle.textContent = translate(
+        preferences.locale,
+        "recipe.emptyTitle",
+      );
       recipeYield.textContent = translate(preferences.locale, "recipe.empty");
       ingredientList.replaceChildren();
       decreaseButton.disabled = true;
@@ -357,19 +438,29 @@ export function startApp(
       preferences.locale,
       servings === 1 ? "recipe.makesOne" : "recipe.makes",
       {
-      servings,
+        servings,
       },
     );
     servingOutput.value = String(servings);
     servingOutput.textContent = String(servings);
     decreaseButton.disabled = servings <= 1;
-    decreaseButton.setAttribute("aria-label", translate(preferences.locale, "recipe.decrease"));
-    increaseButton.setAttribute("aria-label", translate(preferences.locale, "recipe.increase"));
+    decreaseButton.setAttribute(
+      "aria-label",
+      translate(preferences.locale, "recipe.decrease"),
+    );
+    increaseButton.setAttribute(
+      "aria-label",
+      translate(preferences.locale, "recipe.increase"),
+    );
     if (addShoppingButton) {
       addShoppingButton.disabled = false;
-      addShoppingButton.textContent = translate(preferences.locale, "shopping.add", {
-        count: recipe.ingredients.length,
-      });
+      addShoppingButton.textContent = translate(
+        preferences.locale,
+        "shopping.add",
+        {
+          count: recipe.ingredients.length,
+        },
+      );
     }
     if (startCookButton) {
       startCookButton.disabled = false;
@@ -380,7 +471,10 @@ export function startApp(
     for (const button of unitButtons) {
       const system = button.dataset.unit as UnitSystem;
       button.textContent = translate(preferences.locale, `recipe.${system}`);
-      button.setAttribute("aria-pressed", String(system === preferences.unitSystem));
+      button.setAttribute(
+        "aria-pressed",
+        String(system === preferences.unitSystem),
+      );
     }
 
     ingredientList.replaceChildren(
@@ -414,7 +508,8 @@ export function startApp(
     );
   };
 
-  const dialogIsOpen = (): boolean => Boolean(cookDialog?.open || cookDialog?.hasAttribute("open"));
+  const dialogIsOpen = (): boolean =>
+    Boolean(cookDialog?.open || cookDialog?.hasAttribute("open"));
 
   const renderCook = (): void => {
     if (!hasCookView) return;
@@ -425,7 +520,10 @@ export function startApp(
       step: cookStep + 1,
       count: recipe.steps.length,
     });
-    cookStepHeading.textContent = localize(recipe.steps[cookStep]!, preferences.locale);
+    cookStepHeading.textContent = localize(
+      recipe.steps[cookStep]!,
+      preferences.locale,
+    );
     previousStepButton.textContent = `← ${translate(preferences.locale, "cook.previous")}`;
     previousStepButton.disabled = cookStep === 0;
     nextStepButton.textContent =
@@ -494,7 +592,10 @@ export function startApp(
       closeCook();
       return;
     }
-    const next = Math.max(0, Math.min(recipe.steps.length - 1, cookStep + delta));
+    const next = Math.max(
+      0,
+      Math.min(recipe.steps.length - 1, cookStep + delta),
+    );
     if (next === cookStep) return;
     cookStep = next;
     saveCurrentView();
@@ -524,8 +625,12 @@ export function startApp(
     ) {
       title.value = localize(recipe.title, locale);
       servings.value = String(recipe.baseServings);
-      ingredients.value = recipe.ingredients.map((item) => localize(item, locale)).join("\n");
-      steps.value = recipe.steps.map((item) => localize(item, locale)).join("\n");
+      ingredients.value = recipe.ingredients
+        .map((item) => localize(item, locale))
+        .join("\n");
+      steps.value = recipe.steps
+        .map((item) => localize(item, locale))
+        .join("\n");
     }
     formTitle.textContent = translate(locale, "editor.editTitle");
     cancelButton.hidden = false;
@@ -563,10 +668,14 @@ export function startApp(
       const heading = document.createElement("h3");
       heading.textContent = localize(recipe.title, preferences.locale);
       const summary = document.createElement("p");
-      summary.textContent = translate(preferences.locale, "library.recipeSummary", {
-        servings: recipe.baseServings,
-        ingredients: recipe.ingredients.length,
-      });
+      summary.textContent = translate(
+        preferences.locale,
+        "library.recipeSummary",
+        {
+          servings: recipe.baseServings,
+          ingredients: recipe.ingredients.length,
+        },
+      );
       const actions = document.createElement("div");
       actions.className = "card-actions";
       const open = document.createElement("button");
@@ -576,7 +685,8 @@ export function startApp(
         "aria-label",
         `${translate(preferences.locale, "actions.open")} ${localize(recipe.title, preferences.locale)}`,
       );
-      if (recipe.id === selectedRecipe()?.id) open.setAttribute("aria-current", "true");
+      if (recipe.id === selectedRecipe()?.id)
+        open.setAttribute("aria-current", "true");
       open.addEventListener("click", () => chooseRecipe(recipe));
       const edit = document.createElement("button");
       edit.type = "button";
@@ -595,7 +705,10 @@ export function startApp(
           return;
         const result = repository.deleteRecipe(recipe.id);
         if (!announceFailure(result)) {
-          dataStatus.textContent = translate(preferences.locale, "data.deleted");
+          dataStatus.textContent = translate(
+            preferences.locale,
+            "data.deleted",
+          );
           if (editingId === recipe.id) resetForm();
           if (selectedRecipeId === recipe.id) {
             selectedRecipeId = undefined;
@@ -621,20 +734,30 @@ export function startApp(
       const key = element.dataset.i18n;
       if (key) element.textContent = translate(locale, key);
     });
-    document.querySelectorAll<HTMLElement>("[data-i18n-aria]").forEach((element) => {
-      const key = element.dataset.i18nAria;
-      if (key) element.setAttribute("aria-label", translate(locale, key));
-    });
-    document.querySelectorAll<HTMLMetaElement>("[data-i18n-content]").forEach((element) => {
-      const key = element.dataset.i18nContent;
-      if (key) element.content = translate(locale, key);
-    });
+    document
+      .querySelectorAll<HTMLElement>("[data-i18n-aria]")
+      .forEach((element) => {
+        const key = element.dataset.i18nAria;
+        if (key) element.setAttribute("aria-label", translate(locale, key));
+      });
+    document
+      .querySelectorAll<HTMLMetaElement>("[data-i18n-content]")
+      .forEach((element) => {
+        const key = element.dataset.i18nContent;
+        if (key) element.content = translate(locale, key);
+      });
 
     localeButton.textContent = locale === "en" ? "FR" : "EN";
-    localeButton.setAttribute("aria-label", translate(locale, "prefs.switchTo"));
+    localeButton.setAttribute(
+      "aria-label",
+      translate(locale, "prefs.switchTo"),
+    );
     if (cookLocaleButton) {
       cookLocaleButton.textContent = locale === "en" ? "FR" : "EN";
-      cookLocaleButton.setAttribute("aria-label", translate(locale, "prefs.switchTo"));
+      cookLocaleButton.setAttribute(
+        "aria-label",
+        translate(locale, "prefs.switchTo"),
+      );
     }
     const nextTheme: Theme = theme === "light" ? "dark" : "light";
     const themeLabel = translate(locale, `prefs.${nextTheme}`);
@@ -646,7 +769,8 @@ export function startApp(
       cookThemeButton.setAttribute("aria-label", themeLabel);
     }
     status.textContent = announcement ?? "";
-    if (!editingId) formTitle.textContent = translate(locale, "editor.addTitle");
+    if (!editingId)
+      formTitle.textContent = translate(locale, "editor.addTitle");
     cancelButton.textContent = translate(locale, "actions.cancel");
     exportLink.setAttribute("download", "pinch-data.json");
     renderRecipes();
@@ -665,7 +789,10 @@ export function startApp(
 
   const switchLocale = (): void => {
     const locale: Locale = preferences.locale === "en" ? "fr" : "en";
-    updatePreferences({ ...preferences, locale }, translate(locale, "prefs.localeChanged"));
+    updatePreferences(
+      { ...preferences, locale },
+      translate(locale, "prefs.localeChanged"),
+    );
   };
 
   const switchTheme = (): void => {
@@ -688,7 +815,10 @@ export function startApp(
     const recipe = selectedRecipe();
     if (!recipe || targetServings === undefined) return;
     if (targetServings === 1) {
-      recipeStatus!.textContent = translate(preferences.locale, "recipe.minimum");
+      recipeStatus!.textContent = translate(
+        preferences.locale,
+        "recipe.minimum",
+      );
       return;
     }
     targetServings -= 1;
@@ -697,7 +827,7 @@ export function startApp(
       preferences.locale,
       targetServings === 1 ? "recipe.scaledOne" : "recipe.scaled",
       {
-      servings: targetServings,
+        servings: targetServings,
       },
     );
     renderRecipe();
@@ -725,9 +855,13 @@ export function startApp(
         }),
       );
       if (recipeStatus) {
-        recipeStatus.textContent = translate(preferences.locale, "recipe.unitsChanged", {
-          units: translate(preferences.locale, `recipe.${unitSystem}`),
-        });
+        recipeStatus.textContent = translate(
+          preferences.locale,
+          "recipe.unitsChanged",
+          {
+            units: translate(preferences.locale, `recipe.${unitSystem}`),
+          },
+        );
       }
     });
   }
@@ -747,10 +881,14 @@ export function startApp(
     );
     const result = repository.updateShoppingItems(next);
     if (announceShoppingFailure(result)) return;
-    shoppingStatus!.textContent = translate(preferences.locale, "shopping.added", {
-      count: recipe.ingredients.length,
-      servings,
-    });
+    shoppingStatus!.textContent = translate(
+      preferences.locale,
+      "shopping.added",
+      {
+        count: recipe.ingredients.length,
+        servings,
+      },
+    );
     renderShopping();
   });
 
@@ -758,11 +896,17 @@ export function startApp(
     if (!repository) return;
     const current = repository.snapshot().shoppingItems;
     const checkedCount = current.filter(({ checked }) => checked).length;
-    const result = repository.updateShoppingItems(clearCheckedShoppingItems(current));
+    const result = repository.updateShoppingItems(
+      clearCheckedShoppingItems(current),
+    );
     if (announceShoppingFailure(result)) return;
-    shoppingStatus!.textContent = translate(preferences.locale, "shopping.cleared", {
-      count: checkedCount,
-    });
+    shoppingStatus!.textContent = translate(
+      preferences.locale,
+      "shopping.cleared",
+      {
+        count: checkedCount,
+      },
+    );
     renderShopping();
   });
 
@@ -816,7 +960,8 @@ export function startApp(
     const xDistance = touch.clientX - touchStart.x;
     const yDistance = touch.clientY - touchStart.y;
     touchStart = undefined;
-    if (Math.abs(xDistance) < 50 || Math.abs(xDistance) <= Math.abs(yDistance)) return;
+    if (Math.abs(xDistance) < 50 || Math.abs(xDistance) <= Math.abs(yDistance))
+      return;
     moveCookStep(xDistance < 0 ? 1 : -1);
   });
   document.addEventListener("visibilitychange", () => {
@@ -840,19 +985,24 @@ export function startApp(
     const previous = editingId
       ? repository.snapshot().recipes.find(({ id }) => id === editingId)
       : undefined;
-    const localized = (value: string, old?: { fallback: string; en?: string; fr?: string }) => ({
+    const localized = (
+      value: string,
+      old?: { fallback: string; en?: string; fr?: string },
+    ) => ({
       ...(old ?? {}),
       fallback: old?.fallback ?? value,
       [preferences.locale]: value,
     });
     const recipe: Recipe = {
-      id: previous?.id ?? (services.createId?.() ?? crypto.randomUUID()),
+      id: previous?.id ?? services.createId?.() ?? crypto.randomUUID(),
       title: localized(title, previous?.title),
       baseServings: servings,
       ingredients: ingredientLines.map((value, index) =>
         localized(value, previous?.ingredients[index]),
       ),
-      steps: stepLines.map((value, index) => localized(value, previous?.steps[index])),
+      steps: stepLines.map((value, index) =>
+        localized(value, previous?.steps[index]),
+      ),
       source: previous?.source ?? "user",
     };
     const result = repository.saveRecipe(recipe);
@@ -888,7 +1038,10 @@ export function startApp(
         announceFailure(result);
       }
     } catch {
-      dataStatus.textContent = translate(preferences.locale, "data.error.invalid");
+      dataStatus.textContent = translate(
+        preferences.locale,
+        "data.error.invalid",
+      );
     } finally {
       importInput.value = "";
     }
@@ -915,7 +1068,11 @@ export function startApp(
     }
   });
 
-  if (!opened.ok) dataStatus.textContent = translate(preferences.locale, `data.error.${opened.error}`);
+  if (!opened.ok)
+    dataStatus.textContent = translate(
+      preferences.locale,
+      `data.error.${opened.error}`,
+    );
   render();
   return () => ({ ...preferences });
 }

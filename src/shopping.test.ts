@@ -63,7 +63,9 @@ describe("shopping list", () => {
     const checked = setShoppingItemChecked(items, "one", true);
 
     expect(checked[0]?.checked).toBe(true);
-    expect(setShoppingItemChecked(checked, "one", false)[0]?.checked).toBe(false);
+    expect(setShoppingItemChecked(checked, "one", false)[0]?.checked).toBe(
+      false,
+    );
     expect(clearCheckedShoppingItems(checked)).toEqual([items[1]]);
   });
 });

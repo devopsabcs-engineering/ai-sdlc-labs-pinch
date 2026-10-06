@@ -2,15 +2,7 @@ export type Locale = "en" | "fr";
 export type Dimension = "mass" | "volume" | "count";
 export type CanonicalUnit = "g" | "mL" | "count";
 export type Unit =
-  | CanonicalUnit
-  | "kg"
-  | "oz"
-  | "lb"
-  | "L"
-  | "tsp"
-  | "tbsp"
-  | "fl oz"
-  | "cup";
+  CanonicalUnit | "kg" | "oz" | "lb" | "L" | "tsp" | "tbsp" | "fl oz" | "cup";
 
 export interface ParsedIngredient {
   /** Quantity in the dimension's canonical unit (g, mL, or count). */
@@ -82,7 +74,14 @@ const UNIT_DEFINITIONS: readonly UnitDefinition[] = [
     dimension: "volume",
     canonicalUnit: "mL",
     canonicalFactor: 4.92892159375,
-    aliases: ["tsp", "teaspoon", "teaspoons", "c. à café", "cuillère à café", "cuillères à café"],
+    aliases: [
+      "tsp",
+      "teaspoon",
+      "teaspoons",
+      "c. à café",
+      "cuillère à café",
+      "cuillères à café",
+    ],
   },
   {
     unit: "tbsp",
@@ -150,15 +149,22 @@ const aliasEntries = UNIT_DEFINITIONS.flatMap((definition) =>
 const unsupportedUnitAliases = ["pinches", "pinch", "pincées", "pincée"];
 
 function normalizeFractions(value: string): string {
-  return value.replace(/(\d)?([¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞])/gu, (_, whole, fraction: string) => {
-    const normalized = FRACTIONS[fraction];
-    return whole ? `${whole} ${normalized}` : (normalized ?? fraction);
-  });
+  return value.replace(
+    /(\d)?([¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞])/gu,
+    (_, whole, fraction: string) => {
+      const normalized = FRACTIONS[fraction];
+      return whole ? `${whole} ${normalized}` : (normalized ?? fraction);
+    },
+  );
 }
 
-function parseQuantityPrefix(line: string): { value: number; rest: string } | undefined {
+function parseQuantityPrefix(
+  line: string,
+): { value: number; rest: string } | undefined {
   const normalized = normalizeFractions(line);
-  const match = /^(\d+(?:[.,]\d+)?)(?:\s+(\d+)\/(\d+)|\/(\d+))?(?=\s|$)/u.exec(normalized);
+  const match = /^(\d+(?:[.,]\d+)?)(?:\s+(\d+)\/(\d+)|\/(\d+))?(?=\s|$)/u.exec(
+    normalized,
+  );
   if (!match) return undefined;
 
   const whole = Number(match[1]?.replace(",", "."));
@@ -172,16 +178,20 @@ function parseQuantityPrefix(line: string): { value: number; rest: string } | un
     value += numerator / denominator;
   }
 
-  if (!Number.isFinite(value) || value < 0 || denominator === 0) return undefined;
+  if (!Number.isFinite(value) || value < 0 || denominator === 0)
+    return undefined;
   return { value, rest: normalized.slice(match[0].length).trimStart() };
 }
 
-function matchUnit(value: string): { definition: UnitDefinition; rest: string } | undefined {
+function matchUnit(
+  value: string,
+): { definition: UnitDefinition; rest: string } | undefined {
   const lowerValue = value.toLocaleLowerCase("en");
   for (const entry of aliasEntries) {
     if (
       lowerValue === entry.alias ||
-      (lowerValue.startsWith(entry.alias) && /^\s/u.test(value.slice(entry.alias.length)))
+      (lowerValue.startsWith(entry.alias) &&
+        /^\s/u.test(value.slice(entry.alias.length)))
     ) {
       return {
         definition: entry.definition,
@@ -247,7 +257,11 @@ export function convertQuantity(
   return (quantity * from.canonicalFactor) / to.canonicalFactor;
 }
 
-function formatDecimal(value: number, locale: Locale, maximumFractionDigits: number): string {
+function formatDecimal(
+  value: number,
+  locale: Locale,
+  maximumFractionDigits: number,
+): string {
   return new Intl.NumberFormat(locale, {
     useGrouping: false,
     maximumFractionDigits,
@@ -265,12 +279,17 @@ function formatEighth(value: number): string {
   return whole > 0 ? `${whole} ${fraction}` : fraction;
 }
 
-export function formatQuantity(value: number, unit: Unit, locale: Locale): string {
+export function formatQuantity(
+  value: number,
+  unit: Unit,
+  locale: Locale,
+): string {
   if (!Number.isFinite(value) || value < 0) return "";
 
   if (unit === "count" || unit === "cup" || unit === "tsp" || unit === "tbsp") {
     const nearestEighth = Math.round(value * 8) / 8;
-    if (Math.abs(value - nearestEighth) <= 0.02) return formatEighth(nearestEighth);
+    if (Math.abs(value - nearestEighth) <= 0.02)
+      return formatEighth(nearestEighth);
   }
 
   if (unit === "g" || unit === "mL") {

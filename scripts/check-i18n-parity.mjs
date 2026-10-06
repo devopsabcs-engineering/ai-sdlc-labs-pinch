@@ -8,7 +8,9 @@ const catalogUrls = {
 function flatten(value, prefix = "") {
   return Object.entries(value).flatMap(([key, child]) => {
     const path = prefix ? `${prefix}.${key}` : key;
-    return typeof child === "object" && child !== null ? flatten(child, path) : [[path, child]];
+    return typeof child === "object" && child !== null
+      ? flatten(child, path)
+      : [[path, child]];
   });
 }
 
@@ -21,7 +23,10 @@ const catalogs = Object.fromEntries(
   ),
 );
 const entries = Object.fromEntries(
-  Object.entries(catalogs).map(([locale, catalog]) => [locale, new Map(flatten(catalog))]),
+  Object.entries(catalogs).map(([locale, catalog]) => [
+    locale,
+    new Map(flatten(catalog)),
+  ]),
 );
 const allKeys = new Set([...entries.en.keys(), ...entries.fr.keys()]);
 const errors = [];
@@ -29,7 +34,10 @@ const errors = [];
 for (const key of allKeys) {
   for (const locale of ["en", "fr"]) {
     if (!entries[locale].has(key)) errors.push(`${locale}: missing "${key}"`);
-    else if (typeof entries[locale].get(key) !== "string" || !entries[locale].get(key).trim()) {
+    else if (
+      typeof entries[locale].get(key) !== "string" ||
+      !entries[locale].get(key).trim()
+    ) {
       errors.push(`${locale}: "${key}" must be a non-empty string`);
     }
   }

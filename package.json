@@ -12,7 +12,9 @@
     "test:e2e": "npm run build && playwright test",
     "test:lighthouse": "npm run build && node scripts/check-browser-quality.mjs",
     "i18n-parity": "node scripts/check-i18n-parity.mjs",
-    "portable-os": "node scripts/check-portable-os.mjs"
+    "portable-os": "node scripts/check-portable-os.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",
@@ -20,6 +22,7 @@
     "@types/node": "24.10.1",
     "eslint": "9.39.1",
     "jsdom": "26.1.0",
+    "prettier": "3.9.9",
     "typescript": "5.9.3",
     "typescript-eslint": "8.48.0",
     "vite": "7.3.1",

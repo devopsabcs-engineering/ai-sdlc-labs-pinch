@@ -40,7 +40,7 @@ French, works offline, collects no data and needs no account.
 8. Installable PWA that works fully offline. All data stays in localStorage on the device. Export and import as JSON,
    and a clear-all-data button.
 9. Responsive from 360 px phones to wide desktops; WCAG 2.1 AA contrast; full keyboard operation;
-    `prefers-reduced-motion` respected.
+   `prefers-reduced-motion` respected.
 
 Out of scope for v1: accounts, sync across devices, importing from URLs, nutrition data, photos, and any server.
 

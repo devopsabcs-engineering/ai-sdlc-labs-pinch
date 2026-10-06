@@ -17,7 +17,10 @@ const preferences: Preferences = {
   unitSystem: "metric",
 };
 
-function memoryStorage(): DataStorage & { values: Map<string, string>; fail: boolean } {
+function memoryStorage(): DataStorage & {
+  values: Map<string, string>;
+  fail: boolean;
+} {
   const values = new Map<string, string>();
   return {
     values,
@@ -52,7 +55,10 @@ describe("local recipe data", () => {
     }
 
     const storage = memoryStorage();
-    const first = RecipeRepository.open(storage, createInitialData(preferences));
+    const first = RecipeRepository.open(
+      storage,
+      createInitialData(preferences),
+    );
     expect(first.ok && first.value.snapshot().recipes).toHaveLength(3);
     const second = RecipeRepository.open(storage, {
       ...createInitialData(preferences),
@@ -63,24 +69,38 @@ describe("local recipe data", () => {
 
   it("creates, updates, deletes, and reloads recipes", () => {
     const storage = memoryStorage();
-    const opened = RecipeRepository.open(storage, createInitialData(preferences));
+    const opened = RecipeRepository.open(
+      storage,
+      createInitialData(preferences),
+    );
     expect(opened.ok).toBe(true);
     if (!opened.ok) return;
 
     expect(opened.value.saveRecipe(userRecipe()).ok).toBe(true);
     expect(
-      opened.value.saveRecipe({ ...userRecipe(), title: { fallback: "Better toast" } }).ok,
+      opened.value.saveRecipe({
+        ...userRecipe(),
+        title: { fallback: "Better toast" },
+      }).ok,
     ).toBe(true);
-    expect(opened.value.snapshot().recipes.at(-1)?.title.fallback).toBe("Better toast");
+    expect(opened.value.snapshot().recipes.at(-1)?.title.fallback).toBe(
+      "Better toast",
+    );
     expect(opened.value.deleteRecipe("user-1").ok).toBe(true);
 
-    const reloaded = RecipeRepository.open(storage, createInitialData(preferences));
+    const reloaded = RecipeRepository.open(
+      storage,
+      createInitialData(preferences),
+    );
     expect(reloaded.ok && reloaded.value.snapshot().recipes).toHaveLength(3);
   });
 
   it("persists shopping checklist state across repository reloads", () => {
     const storage = memoryStorage();
-    const opened = RecipeRepository.open(storage, createInitialData(preferences));
+    const opened = RecipeRepository.open(
+      storage,
+      createInitialData(preferences),
+    );
     if (!opened.ok) throw new Error("open failed");
     const items: ShoppingItem[] = [
       {
@@ -100,22 +120,34 @@ describe("local recipe data", () => {
     ];
 
     expect(opened.value.updateShoppingItems(items).ok).toBe(true);
-    const reloaded = RecipeRepository.open(storage, createInitialData(preferences));
-    expect(reloaded.ok && reloaded.value.snapshot().shoppingItems).toEqual(items);
+    const reloaded = RecipeRepository.open(
+      storage,
+      createInitialData(preferences),
+    );
+    expect(reloaded.ok && reloaded.value.snapshot().shoppingItems).toEqual(
+      items,
+    );
   });
 
   it("exports versioned JSON and atomically imports valid data", () => {
     const storage = memoryStorage();
-    const opened = RecipeRepository.open(storage, createInitialData(preferences));
+    const opened = RecipeRepository.open(
+      storage,
+      createInitialData(preferences),
+    );
     if (!opened.ok) throw new Error("open failed");
-    const exported = JSON.parse(opened.value.exportJson()) as { version: number };
+    const exported = JSON.parse(opened.value.exportJson()) as {
+      version: number;
+    };
     expect(exported.version).toBe(1);
 
     const candidate = opened.value.snapshot();
     candidate.recipes.push(userRecipe());
     const result = opened.value.importJson(JSON.stringify(candidate));
     expect(result.ok && result.value.recipes).toHaveLength(4);
-    expect(JSON.parse(storage.values.get(APP_DATA_KEY) ?? "").recipes).toHaveLength(4);
+    expect(
+      JSON.parse(storage.values.get(APP_DATA_KEY) ?? "").recipes,
+    ).toHaveLength(4);
   });
 
   it.each([
@@ -128,31 +160,48 @@ describe("local recipe data", () => {
     JSON.stringify({ ...createInitialData(preferences), version: 2 }),
   ])("rejects an invalid import without changing valid data", (candidate) => {
     const storage = memoryStorage();
-    const opened = RecipeRepository.open(storage, createInitialData(preferences));
+    const opened = RecipeRepository.open(
+      storage,
+      createInitialData(preferences),
+    );
     if (!opened.ok) throw new Error("open failed");
     const before = opened.value.exportJson();
 
-    expect(opened.value.importJson(candidate)).toEqual({ ok: false, error: "invalid" });
+    expect(opened.value.importJson(candidate)).toEqual({
+      ok: false,
+      error: "invalid",
+    });
     expect(opened.value.exportJson()).toBe(before);
-    expect(storage.values.get(APP_DATA_KEY)).toBe(JSON.stringify(JSON.parse(before)));
+    expect(storage.values.get(APP_DATA_KEY)).toBe(
+      JSON.stringify(JSON.parse(before)),
+    );
   });
 
   it("does not mutate memory or valid storage when persistence fails", () => {
     const storage = memoryStorage();
-    const opened = RecipeRepository.open(storage, createInitialData(preferences));
+    const opened = RecipeRepository.open(
+      storage,
+      createInitialData(preferences),
+    );
     if (!opened.ok) throw new Error("open failed");
     const beforeMemory = opened.value.snapshot();
     const beforeStorage = storage.values.get(APP_DATA_KEY);
     storage.fail = true;
 
-    expect(opened.value.saveRecipe(userRecipe())).toEqual({ ok: false, error: "storage" });
+    expect(opened.value.saveRecipe(userRecipe())).toEqual({
+      ok: false,
+      error: "storage",
+    });
     expect(opened.value.snapshot()).toEqual(beforeMemory);
     expect(storage.values.get(APP_DATA_KEY)).toBe(beforeStorage);
   });
 
   it("clears all data and resets preferences", () => {
     const storage = memoryStorage();
-    const opened = RecipeRepository.open(storage, createInitialData(preferences));
+    const opened = RecipeRepository.open(
+      storage,
+      createInitialData(preferences),
+    );
     if (!opened.ok) throw new Error("open failed");
 
     const result = opened.value.clear();
@@ -165,7 +214,9 @@ describe("local recipe data", () => {
   });
 
   it("uses localized sample text with a required fallback", () => {
-    expect(localize(SAMPLE_RECIPES[0]!.title, "fr")).toBe("Crêpes de tous les jours");
+    expect(localize(SAMPLE_RECIPES[0]!.title, "fr")).toBe(
+      "Crêpes de tous les jours",
+    );
     expect(localize({ fallback: "User text" }, "fr")).toBe("User text");
   });
 });

@@ -29,7 +29,9 @@ self.addEventListener("activate", (event) => {
     (async () => {
       const cacheNames = await caches.keys();
       await Promise.all(
-        cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name)),
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name)),
       );
       await self.clients.claim();
     })(),
@@ -38,7 +40,8 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const requestUrl = new URL(event.request.url);
-  if (event.request.method !== "GET" || requestUrl.origin !== scopeUrl.origin) return;
+  if (event.request.method !== "GET" || requestUrl.origin !== scopeUrl.origin)
+    return;
 
   event.respondWith(
     (async () => {

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { loadPreferences, PREFERENCES_KEY, savePreferences } from "./preferences";
+import {
+  loadPreferences,
+  PREFERENCES_KEY,
+  savePreferences,
+} from "./preferences";
 
 function memoryStorage(): Pick<Storage, "getItem" | "setItem"> {
   const values = new Map<string, string>();
@@ -20,7 +24,11 @@ describe("preferences", () => {
 
   it("round-trips an explicit preference", () => {
     const storage = memoryStorage();
-    savePreferences(storage, { locale: "en", theme: "light", unitSystem: "imperial" });
+    savePreferences(storage, {
+      locale: "en",
+      theme: "light",
+      unitSystem: "imperial",
+    });
     expect(loadPreferences(storage, ["fr"], true)).toEqual({
       locale: "en",
       theme: "light",

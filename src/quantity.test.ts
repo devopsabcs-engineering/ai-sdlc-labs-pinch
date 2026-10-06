@@ -15,14 +15,17 @@ describe("ingredient quantity parsing", () => {
     ["2½ kg potatoes", 2500, "g", "mass", "potatoes"],
     ["3 eggs", 3, "count", "count", "eggs"],
     ["2 cuillères à café sel", 9.8578431875, "mL", "volume", "sel"],
-  ])("parses %s into a canonical quantity", (line, quantity, unit, dimension, name) => {
-    expect(parseIngredientLine(line).parsed).toMatchObject({
-      quantity,
-      unit,
-      dimension,
-      name,
-    });
-  });
+  ])(
+    "parses %s into a canonical quantity",
+    (line, quantity, unit, dimension, name) => {
+      expect(parseIngredientLine(line).parsed).toMatchObject({
+        quantity,
+        unit,
+        dimension,
+        name,
+      });
+    },
+  );
 
   it.each([
     "",
@@ -60,9 +63,12 @@ describe("quantity scaling", () => {
     [100, 2, -1],
     [-100, 2, 4],
     [Number.NaN, 2, 4],
-  ])("rejects invalid quantity or serving boundaries", (quantity, base, target) => {
-    expect(scaleQuantity(quantity, base, target)).toBeUndefined();
-  });
+  ])(
+    "rejects invalid quantity or serving boundaries",
+    (quantity, base, target) => {
+      expect(scaleQuantity(quantity, base, target)).toBeUndefined();
+    },
+  );
 
   it("supports a zero target without changing the input", () => {
     expect(scaleQuantity(100, 4, 0)).toBe(0);
@@ -91,7 +97,9 @@ describe("same-dimension conversion", () => {
 
   it("rejects invalid quantities", () => {
     expect(convertQuantity(-1, "g", "kg")).toBeUndefined();
-    expect(convertQuantity(Number.POSITIVE_INFINITY, "g", "kg")).toBeUndefined();
+    expect(
+      convertQuantity(Number.POSITIVE_INFINITY, "g", "kg"),
+    ).toBeUndefined();
   });
 });
 

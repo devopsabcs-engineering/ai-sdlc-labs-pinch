@@ -27,30 +27,30 @@ five interactions testable without implying that the prototype is the full recip
 
 ### 1. Scale and prepare / Ajuster et préparer
 
-| Moment | English journey | Parcours français | Design response |
-|---|---|---|---|
-| Orient | “I need crepes for six.” | « Je veux faire des crêpes pour six. » | Open directly on the sample recipe; show its base and current servings together. |
-| Adjust | Select `+` twice from 4 to 6. | Appuyer deux fois sur `+`, de 4 à 6. | Quantities update in place; a short status confirms “Scaled for 6 / Ajustée pour 6”. |
-| Check | Scan the changed ingredient amounts. | Vérifier les nouvelles quantités. | Align quantities in a narrow data column; briefly highlight only changed numbers. |
-| Continue | Add the scaled ingredients or start cooking. | Ajouter les ingrédients ou commencer à cuisiner. | Two explicit actions follow the ingredient list; neither is hidden in a menu. |
+| Moment   | English journey                              | Parcours français                                | Design response                                                                      |
+| -------- | -------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| Orient   | “I need crepes for six.”                     | « Je veux faire des crêpes pour six. »           | Open directly on the sample recipe; show its base and current servings together.     |
+| Adjust   | Select `+` twice from 4 to 6.                | Appuyer deux fois sur `+`, de 4 à 6.             | Quantities update in place; a short status confirms “Scaled for 6 / Ajustée pour 6”. |
+| Check    | Scan the changed ingredient amounts.         | Vérifier les nouvelles quantités.                | Align quantities in a narrow data column; briefly highlight only changed numbers.    |
+| Continue | Add the scaled ingredients or start cooking. | Ajouter les ingrédients ou commencer à cuisiner. | Two explicit actions follow the ingredient list; neither is hidden in a menu.        |
 
 ### 2. Shop / Faire les courses
 
-| Moment | English journey | Parcours français | Design response |
-|---|---|---|---|
-| Add | Choose “Add 4 ingredients”. | Choisir « Ajouter 4 ingrédients ». | Open the list panel/view and confirm the scaled serving context. |
-| Shop | Tick an item when it is in the basket. | Cocher un article placé dans le panier. | Keep checked items visible at the end, struck through but still readable. |
-| Recover | Untick an item checked by mistake. | Décocher un article coché par erreur. | Checkbox remains operable; no destructive undo pattern is needed. |
-| Finish | Clear only checked items. | Effacer uniquement les articles cochés. | Disabled until at least one item is checked; confirm the resulting count via status text. |
+| Moment  | English journey                        | Parcours français                       | Design response                                                                           |
+| ------- | -------------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Add     | Choose “Add 4 ingredients”.            | Choisir « Ajouter 4 ingrédients ».      | Open the list panel/view and confirm the scaled serving context.                          |
+| Shop    | Tick an item when it is in the basket. | Cocher un article placé dans le panier. | Keep checked items visible at the end, struck through but still readable.                 |
+| Recover | Untick an item checked by mistake.     | Décocher un article coché par erreur.   | Checkbox remains operable; no destructive undo pattern is needed.                         |
+| Finish  | Clear only checked items.              | Effacer uniquement les articles cochés. | Disabled until at least one item is checked; confirm the resulting count via status text. |
 
 ### 3. Cook hands-busy / Cuisiner les mains occupées
 
-| Moment | English journey | Parcours français | Design response |
-|---|---|---|---|
-| Enter | Choose “Start cooking”. | Choisir « Commencer à cuisiner ». | Full-viewport cook mode begins at step 1 and requests wake lock if available. |
+| Moment   | English journey                                             | Parcours français                                                                | Design response                                                                         |
+| -------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Enter    | Choose “Start cooking”.                                     | Choisir « Commencer à cuisiner ».                                                | Full-viewport cook mode begins at step 1 and requests wake lock if available.           |
 | Progress | Read large text, then use Next, Right Arrow, or swipe left. | Lire le texte agrandi, puis utiliser Suivant, Flèche droite ou balayer à gauche. | Show one step only, plus `1 of 3 / 1 sur 3`; buttons remain the primary visible method. |
-| Boundary | Reach the first or final step. | Atteindre la première ou la dernière étape. | Previous is disabled at step 1; final action says “Finish / Terminer”, not “Next”. |
-| Exit | Leave and return to the recipe. | Quitter et revenir à la recette. | Preserve serving count and last step; restore focus to “Start cooking”. |
+| Boundary | Reach the first or final step.                              | Atteindre la première ou la dernière étape.                                      | Previous is disabled at step 1; final action says “Finish / Terminer”, not “Next”.      |
+| Exit     | Leave and return to the recipe.                             | Quitter et revenir à la recette.                                                 | Preserve serving count and last step; restore focus to “Start cooking”.                 |
 
 Language and theme changes are cross-journey preferences, not separate destinations. Their controls
 remain in the header and in cook mode. Switching language uses the equivalent label (`FR` or `EN`);
@@ -77,19 +77,19 @@ At every state: [language switch] translates UI + sample and formats numbers;
 
 ### Prototype states and UX copy
 
-| State | Required behavior | English | Français |
-|---|---|---|---|
-| Default recipe | 4 servings, metric selected, list empty | `Crepes` · `Makes 4 servings` | `Crêpes` · `Donne 4 portions` |
-| Scale minimum | Do not allow 0; disable minus at 1 | `Minimum 1 serving` | `Minimum : 1 portion` |
-| Scaled | Update all four amounts as one transaction | `Scaled for 6 servings` | `Ajustée pour 6 portions` |
-| Unparsed/unknown | Keep original line and mark it quietly; never fabricate a conversion | `As written` | `Tel qu’écrit` |
-| Added | Re-adding the same sample replaces/merges like items rather than duplicating rows | `4 ingredients added for 6 servings` | `4 ingrédients ajoutés pour 6 portions` |
-| List empty | Explain the next action and link back to recipe | `Add ingredients from the recipe.` | `Ajoutez les ingrédients de la recette.` |
-| List checked | Checked rows move after unchecked rows without stealing focus | `1 of 4 collected` | `1 article sur 4 ramassé` |
-| Clear checked | Remove checked only; announce count | `1 checked item cleared` | `1 article coché effacé` |
-| Cook wake lock on | Persistent, non-alarming status | `Screen stays awake` | `L’écran reste allumé` |
-| Wake lock unavailable | Cooking remains fully usable | `Keep your screen awake in device settings.` | `Gardez l’écran allumé dans les réglages de l’appareil.` |
-| Cook final | Replace Next with Finish; Preserve previous | `Finish` | `Terminer` |
+| State                 | Required behavior                                                                 | English                                      | Français                                                 |
+| --------------------- | --------------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------------- |
+| Default recipe        | 4 servings, metric selected, list empty                                           | `Crepes` · `Makes 4 servings`                | `Crêpes` · `Donne 4 portions`                            |
+| Scale minimum         | Do not allow 0; disable minus at 1                                                | `Minimum 1 serving`                          | `Minimum : 1 portion`                                    |
+| Scaled                | Update all four amounts as one transaction                                        | `Scaled for 6 servings`                      | `Ajustée pour 6 portions`                                |
+| Unparsed/unknown      | Keep original line and mark it quietly; never fabricate a conversion              | `As written`                                 | `Tel qu’écrit`                                           |
+| Added                 | Re-adding the same sample replaces/merges like items rather than duplicating rows | `4 ingredients added for 6 servings`         | `4 ingrédients ajoutés pour 6 portions`                  |
+| List empty            | Explain the next action and link back to recipe                                   | `Add ingredients from the recipe.`           | `Ajoutez les ingrédients de la recette.`                 |
+| List checked          | Checked rows move after unchecked rows without stealing focus                     | `1 of 4 collected`                           | `1 article sur 4 ramassé`                                |
+| Clear checked         | Remove checked only; announce count                                               | `1 checked item cleared`                     | `1 article coché effacé`                                 |
+| Cook wake lock on     | Persistent, non-alarming status                                                   | `Screen stays awake`                         | `L’écran reste allumé`                                   |
+| Wake lock unavailable | Cooking remains fully usable                                                      | `Keep your screen awake in device settings.` | `Gardez l’écran allumé dans les réglages de l’appareil.` |
+| Cook final            | Replace Next with Finish; Preserve previous                                       | `Finish`                                     | `Terminer`                                               |
 
 There is no loading state: prototype data is embedded and all actions are local. Unexpected parse,
 storage, network, or install errors are outside this spike. If a control cannot act, disable it and
@@ -235,7 +235,8 @@ are the complete prototype contract.
 }
 
 :root {
-  --font-display: "Arial Narrow", "Roboto Condensed", "Aptos Narrow", sans-serif;
+  --font-display:
+    "Arial Narrow", "Roboto Condensed", "Aptos Narrow", sans-serif;
   --font-body: "Aptos", "Segoe UI", system-ui, sans-serif;
   --font-data: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
   --text-xs: 0.75rem;

@@ -27,14 +27,19 @@ export interface AppData {
   preferences: Preferences;
 }
 
-export type DataResult<T> = { ok: true; value: T } | { ok: false; error: string };
+export type DataResult<T> =
+  { ok: true; value: T } | { ok: false; error: string };
 
 export interface DataStorage {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
 }
 
-const bilingual = (en: string, fr: string): LocalizedText => ({ fallback: en, en, fr });
+const bilingual = (en: string, fr: string): LocalizedText => ({
+  fallback: en,
+  en,
+  fr,
+});
 
 export const SAMPLE_RECIPES: readonly Recipe[] = [
   {
@@ -47,8 +52,14 @@ export const SAMPLE_RECIPES: readonly Recipe[] = [
       bilingual("1 1/4 cup milk", "1 1/4 tasse de lait"),
     ],
     steps: [
-      bilingual("Whisk the ingredients until smooth.", "Fouetter les ingrédients jusqu'à consistance lisse."),
-      bilingual("Cook thin layers in a hot pan.", "Cuire de fines couches dans une poêle chaude."),
+      bilingual(
+        "Whisk the ingredients until smooth.",
+        "Fouetter les ingrédients jusqu'à consistance lisse.",
+      ),
+      bilingual(
+        "Cook thin layers in a hot pan.",
+        "Cuire de fines couches dans une poêle chaude.",
+      ),
     ],
     source: "sample",
   },
@@ -63,7 +74,10 @@ export const SAMPLE_RECIPES: readonly Recipe[] = [
     ],
     steps: [
       bilingual("Rinse the lentils.", "Rincer les lentilles."),
-      bilingual("Simmer everything until tender.", "Laisser mijoter le tout jusqu'à tendreté."),
+      bilingual(
+        "Simmer everything until tender.",
+        "Laisser mijoter le tout jusqu'à tendreté.",
+      ),
     ],
     source: "sample",
   },
@@ -77,8 +91,14 @@ export const SAMPLE_RECIPES: readonly Recipe[] = [
       bilingual("100 g butter", "100 g de beurre"),
     ],
     steps: [
-      bilingual("Slice the apples into a baking dish.", "Trancher les pommes dans un plat de cuisson."),
-      bilingual("Top with the oat mixture and bake.", "Garnir du mélange d'avoine et cuire au four."),
+      bilingual(
+        "Slice the apples into a baking dish.",
+        "Trancher les pommes dans un plat de cuisson.",
+      ),
+      bilingual(
+        "Top with the oat mixture and bake.",
+        "Garnir du mélange d'avoine et cuire au four.",
+      ),
     ],
     source: "sample",
   },
@@ -163,19 +183,23 @@ export function isAppData(value: unknown): value is AppData {
     data.version === APP_DATA_VERSION &&
     Array.isArray(data.recipes) &&
     data.recipes.every(isRecipe) &&
-    new Set(data.recipes.map((recipe) => recipe.id)).size === data.recipes.length &&
+    new Set(data.recipes.map((recipe) => recipe.id)).size ===
+      data.recipes.length &&
     Array.isArray(data.shoppingItems) &&
     data.shoppingItems.every(isShoppingItem) &&
-    new Set(data.shoppingItems.map((item) => item.id)).size === data.shoppingItems.length &&
+    new Set(data.shoppingItems.map((item) => item.id)).size ===
+      data.shoppingItems.length &&
     new Set(
       data.shoppingItems
         .map((item) => item.mergeKey)
         .filter((key): key is string => key !== undefined),
-    ).size === data.shoppingItems.filter((item) => item.mergeKey !== undefined).length &&
+    ).size ===
+      data.shoppingItems.filter((item) => item.mergeKey !== undefined).length &&
     preferences !== undefined &&
     (preferences.locale === "en" || preferences.locale === "fr") &&
     (preferences.theme === "light" || preferences.theme === "dark") &&
-    (preferences.unitSystem === "metric" || preferences.unitSystem === "imperial")
+    (preferences.unitSystem === "metric" ||
+      preferences.unitSystem === "imperial")
   );
 }
 
@@ -199,7 +223,10 @@ export class RecipeRepository {
     this.data = data;
   }
 
-  static open(storage: DataStorage, initial: AppData): DataResult<RecipeRepository> {
+  static open(
+    storage: DataStorage,
+    initial: AppData,
+  ): DataResult<RecipeRepository> {
     try {
       const saved = storage.getItem(APP_DATA_KEY);
       if (saved) {
@@ -232,7 +259,9 @@ export class RecipeRepository {
   saveRecipe(recipe: Recipe): DataResult<AppData> {
     if (!isRecipe(recipe)) return { ok: false, error: "invalid" };
     const recipes = this.data.recipes.some(({ id }) => id === recipe.id)
-      ? this.data.recipes.map((current) => (current.id === recipe.id ? clone(recipe) : current))
+      ? this.data.recipes.map((current) =>
+          current.id === recipe.id ? clone(recipe) : current,
+        )
       : [...this.data.recipes, clone(recipe)];
     return this.replace({ ...this.data, recipes });
   }

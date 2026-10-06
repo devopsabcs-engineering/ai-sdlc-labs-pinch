@@ -13,21 +13,32 @@ test.beforeEach(async ({ page }) => {
   await page.goto(appPath);
 });
 
-test("scales a recipe, toggles units, shops, cooks, and switches EN/FR", async ({ page }) => {
-  await expect(page.locator("[data-recipe-title]")).toHaveText("Everyday crêpes");
+test("scales a recipe, toggles units, shops, cooks, and switches EN/FR", async ({
+  page,
+}) => {
+  await expect(page.locator("[data-recipe-title]")).toHaveText(
+    "Everyday crêpes",
+  );
 
   await page.locator("[data-increase]").click();
   await expect(page.locator("[data-servings]")).toHaveText("5");
   await expect(page.locator("[data-ingredient-list]")).toContainText("296 mL");
 
   await page.locator('[data-unit="imperial"]').click();
-  await expect(page.locator('[data-unit="imperial"]')).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator("[data-ingredient-list]")).toContainText("1 1/4 cup");
+  await expect(page.locator('[data-unit="imperial"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(page.locator("[data-ingredient-list]")).toContainText(
+    "1 1/4 cup",
+  );
 
   await page.locator("[data-add-shopping]").click();
   await expect(page.locator("[data-shopping-list] input")).toHaveCount(3);
   await page.locator("[data-shopping-list] input").first().check();
-  await expect(page.locator("[data-shopping-list] input").first()).toBeChecked();
+  await expect(
+    page.locator("[data-shopping-list] input").first(),
+  ).toBeChecked();
 
   await page.locator("[data-start-cook]").click();
   await expect(page.locator("[data-cook-dialog]")).toBeVisible();
@@ -42,22 +53,33 @@ test("scales a recipe, toggles units, shops, cooks, and switches EN/FR", async (
 
   await page.locator("#locale-toggle").click();
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
-  await expect(page.locator("[data-recipe-title]")).toHaveText("Crêpes de tous les jours");
-  await expect(page.locator("[data-shopping-title]")).toContainText("Liste de courses");
+  await expect(page.locator("[data-recipe-title]")).toHaveText(
+    "Crêpes de tous les jours",
+  );
+  await expect(page.locator("[data-shopping-title]")).toContainText(
+    "Liste de courses",
+  );
 });
 
-test("starts offline from its service worker cache", async ({ page, context }) => {
+test("starts offline from its service worker cache", async ({
+  page,
+  context,
+}) => {
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });
   await page.reload();
   await expect
-    .poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)))
+    .poll(() =>
+      page.evaluate(() => Boolean(navigator.serviceWorker.controller)),
+    )
     .toBe(true);
 
   await context.setOffline(true);
   await page.reload();
 
-  await expect(page.locator("[data-recipe-title]")).toHaveText("Everyday crêpes");
+  await expect(page.locator("[data-recipe-title]")).toHaveText(
+    "Everyday crêpes",
+  );
   await expect(page.locator("[data-increase]")).toBeEnabled();
 });

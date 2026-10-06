@@ -34,7 +34,8 @@
 }
 
 :root {
-  --font-display: "Arial Narrow", "Roboto Condensed", "Aptos Narrow", sans-serif;
+  --font-display:
+    "Arial Narrow", "Roboto Condensed", "Aptos Narrow", sans-serif;
   --font-body: "Aptos", "Segoe UI", system-ui, sans-serif;
   --font-data: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
   --text-xs: 0.75rem;

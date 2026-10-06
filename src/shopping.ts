@@ -1,4 +1,9 @@
-import { parseIngredientLine, scaleQuantity, type CanonicalUnit, type Dimension } from "./quantity";
+import {
+  parseIngredientLine,
+  scaleQuantity,
+  type CanonicalUnit,
+  type Dimension,
+} from "./quantity";
 
 export interface ShoppingItem {
   id: string;
@@ -38,7 +43,11 @@ export function addShoppingIngredients(
   for (const ingredient of ingredients) {
     const parsed = parseIngredientLine(ingredient.text).parsed;
     const quantity = parsed
-      ? scaleQuantity(parsed.quantity, ingredient.baseServings, ingredient.targetServings)
+      ? scaleQuantity(
+          parsed.quantity,
+          ingredient.baseServings,
+          ingredient.targetServings,
+        )
       : undefined;
 
     if (!parsed || quantity === undefined) {
@@ -76,9 +85,13 @@ export function setShoppingItemChecked(
   id: string,
   checked: boolean,
 ): ShoppingItem[] {
-  return items.map((item) => (item.id === id ? { ...item, checked } : { ...item }));
+  return items.map((item) =>
+    item.id === id ? { ...item, checked } : { ...item },
+  );
 }
 
-export function clearCheckedShoppingItems(items: readonly ShoppingItem[]): ShoppingItem[] {
+export function clearCheckedShoppingItems(
+  items: readonly ShoppingItem[],
+): ShoppingItem[] {
   return items.filter((item) => !item.checked).map((item) => ({ ...item }));
 }

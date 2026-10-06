@@ -1,0 +1,9 @@
+dist
+node_modules
+package-lock.json
+evidence
+.copilot-tracking
+test-results
+playwright-report
+prototype/evidence
+public/icon.svg
