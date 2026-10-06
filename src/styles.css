@@ -443,7 +443,10 @@ h2 {
 }
 
 .recipe-actions {
+  display: flex;
   margin-top: var(--space-6);
+  flex-wrap: wrap;
+  gap: var(--space-3);
 }
 
 .shopping-panel {
@@ -513,6 +516,79 @@ h2 {
   text-align: center;
 }
 
+.cook-dialog {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--color-canvas);
+  color: var(--color-text);
+}
+
+.cook-dialog::backdrop {
+  background: var(--color-canvas);
+}
+
+.cook-shell {
+  display: grid;
+  grid-template-rows: auto minmax(min-content, 1fr) auto;
+  width: min(100%, var(--content-max));
+  min-height: 100%;
+  margin: auto;
+  padding: var(--space-4) clamp(var(--space-4), 5vw, var(--space-12));
+}
+
+.cook-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cook-count {
+  margin: 0;
+  font-family: var(--font-data);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cook-preferences {
+  justify-self: end;
+}
+
+.cook-step {
+  display: flex;
+  max-width: 55rem;
+  margin: auto;
+  align-self: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.cook-step h2 {
+  margin: var(--space-4) 0;
+  font-size: clamp(2rem, 7vw, 5rem);
+  text-wrap: balance;
+}
+
+.wake-status {
+  color: var(--color-text-muted);
+}
+
+.cook-actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  padding-block: var(--space-4);
+  justify-content: space-between;
+  gap: var(--space-4);
+  background: var(--color-canvas);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -544,6 +620,22 @@ h2 {
   .theme-button span[aria-hidden="true"] {
     display: none;
   }
+
+  .cook-header {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .cook-count {
+    justify-self: center;
+  }
+
+  .cook-preferences [data-cook-theme-label] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
 }
 
 @media (max-width: 25rem) {
@@ -572,6 +664,26 @@ h2 {
   .ingredient-list li {
     grid-template-columns: minmax(5.5rem, 0.35fr) minmax(0, 1fr);
     gap: var(--space-2);
+  }
+
+  .cook-shell {
+    padding-inline: var(--space-3);
+  }
+
+  .cook-header {
+    gap: var(--space-2);
+  }
+
+  .cook-header button {
+    padding-inline: var(--space-2);
+  }
+
+  .cook-actions {
+    display: grid;
+  }
+
+  .cook-actions button {
+    width: 100%;
   }
 }
 

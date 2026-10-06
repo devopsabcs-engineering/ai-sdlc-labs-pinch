@@ -62,6 +62,7 @@
             <button class="primary-button" type="button" data-add-shopping>
               Add ingredients to shopping list
             </button>
+            <button type="button" data-start-cook>Start cooking</button>
           </div>
           <p class="recipe-status" role="status" aria-live="polite" aria-atomic="true" data-recipe-status></p>
         </section>
@@ -125,6 +126,41 @@
         <p data-i18n="footer.note">No account. No tracking. Just cooking.</p>
       </footer>
       <p class="sr-only" role="status" aria-live="polite" data-preference-status></p>
+
+      <dialog class="cook-dialog" data-cook-dialog aria-labelledby="cook-heading">
+        <div class="cook-shell">
+          <header class="cook-header">
+            <button type="button" data-close-cook>
+              <span aria-hidden="true">×</span>
+              <span data-i18n="cook.close">Close</span>
+            </button>
+            <p class="cook-count" data-cook-count>Step 1 of 1</p>
+            <div
+              class="preferences cook-preferences"
+              role="group"
+              aria-label="Preferences"
+              data-i18n-aria="prefs.group"
+            >
+              <button type="button" data-cook-locale>FR</button>
+              <button class="theme-button" type="button" data-cook-theme>
+                <span aria-hidden="true">◐</span>
+                <span data-cook-theme-label>Dark theme</span>
+              </button>
+            </div>
+          </header>
+
+          <section class="cook-step">
+            <p class="eyebrow" data-i18n="cook.mode">Cook mode</p>
+            <h2 id="cook-heading" tabindex="-1" data-cook-step></h2>
+            <p class="wake-status" role="status" aria-live="polite" data-wake-status></p>
+          </section>
+
+          <footer class="cook-actions">
+            <button type="button" data-previous-step>← Previous</button>
+            <button class="primary-button" type="button" data-next-step>Next →</button>
+          </footer>
+        </div>
+      </dialog>
     </div>
     <noscript>Pinch requires JavaScript to manage your local preferences.</noscript>
   </body>

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { formatIngredient, startApp } from "./app";
 import { APP_DATA_KEY } from "./data";
 
@@ -20,6 +20,7 @@ const shell = `
       <button type="button" data-unit="imperial"></button>
       <ul data-ingredient-list></ul>
       <button type="button" data-add-shopping></button>
+      <button type="button" data-start-cook></button>
       <p data-recipe-status></p>
     </section>
     <h2 data-shopping-title></h2>
@@ -41,6 +42,16 @@ const shell = `
     <a data-export>Export</a>
     <button data-clear>Clear</button>
     <p data-data-status></p>
+    <dialog data-cook-dialog>
+      <button type="button" data-close-cook><span>Close</span></button>
+      <p data-cook-count></p>
+      <button type="button" data-cook-locale></button>
+      <button type="button" data-cook-theme><span data-cook-theme-label></span></button>
+      <h2 tabindex="-1" data-cook-step></h2>
+      <p data-wake-status></p>
+      <button type="button" data-previous-step></button>
+      <button type="button" data-next-step></button>
+    </dialog>
   </div>`;
 
 function memoryStorage(): Pick<Storage, "getItem" | "setItem"> {
@@ -255,6 +266,104 @@ describe("application shell", () => {
       createId: () => `shopping-${++id}`,
     });
     expect(document.querySelectorAll("[data-shopping-id]")).toHaveLength(2);
+  });
+
+  it("keeps cook mode focused, restores focus, and preserves its step", async () => {
+    const storage = memoryStorage();
+    startApp(document.querySelector<HTMLElement>("#app")!, {
+      storage,
+      languages: ["en"],
+      prefersDark: false,
+    });
+    const start = document.querySelector<HTMLButtonElement>("[data-start-cook]")!;
+    const dialog = document.querySelector<HTMLDialogElement>("[data-cook-dialog]")!;
+    const heading = document.querySelector<HTMLElement>("[data-cook-step]")!;
+
+    start.click();
+    expect(dialog.hasAttribute("open")).toBe(true);
+    expect(document.activeElement).toBe(heading);
+    expect(heading.textContent).toBe("Whisk the ingredients until smooth.");
+    expect(document.querySelector("[data-wake-status]")?.textContent).toBe(
+      "Keep your screen awake in device settings.",
+    );
+
+    dialog.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    expect(heading.textContent).toBe("Cook thin layers in a hot pan.");
+    expect(document.querySelector("[data-next-step]")?.textContent).toBe("Finish");
+
+    const close = document.querySelector<HTMLButtonElement>("[data-close-cook]")!;
+    close.focus();
+    dialog.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true }),
+    );
+    expect(document.activeElement).toBe(document.querySelector("[data-next-step]"));
+
+    dialog.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    await Promise.resolve();
+    expect(dialog.hasAttribute("open")).toBe(false);
+    expect(document.activeElement).toBe(start);
+
+    start.click();
+    expect(heading.textContent).toBe("Cook thin layers in a hot pan.");
+  });
+
+  it("supports swipe steps and releases an acquired wake lock on finish", async () => {
+    const release = vi.fn(async () => undefined);
+    const requestWakeLock = vi.fn(async () => ({ release, released: false }));
+    startApp(document.querySelector<HTMLElement>("#app")!, {
+      storage: memoryStorage(),
+      languages: ["en"],
+      prefersDark: false,
+      requestWakeLock,
+    });
+    const dialog = document.querySelector<HTMLDialogElement>("[data-cook-dialog]")!;
+    document.querySelector<HTMLButtonElement>("[data-start-cook]")!.click();
+    await Promise.resolve();
+
+    expect(requestWakeLock).toHaveBeenCalledOnce();
+    expect(document.querySelector("[data-wake-status]")?.textContent).toBe("Screen stays awake");
+
+    const swipe = (type: string, x: number): void => {
+      const event = new Event(type, { bubbles: true });
+      Object.defineProperty(event, "changedTouches", {
+        value: [{ clientX: x, clientY: 10 }],
+      });
+      dialog.dispatchEvent(event);
+    };
+    swipe("touchstart", 100);
+    swipe("touchend", 20);
+    expect(document.querySelector("[data-cook-count]")?.textContent).toBe("Step 2 of 2");
+
+    swipe("touchstart", 20);
+    swipe("touchend", 100);
+    expect(document.querySelector("[data-cook-count]")?.textContent).toBe("Step 1 of 2");
+    document.querySelector<HTMLButtonElement>("[data-next-step]")!.click();
+    document.querySelector<HTMLButtonElement>("[data-next-step]")!.click();
+    await Promise.resolve();
+    expect(release).toHaveBeenCalledOnce();
+    expect(dialog.hasAttribute("open")).toBe(false);
+  });
+
+  it("localizes cook mode without losing the current step", () => {
+    startApp(document.querySelector<HTMLElement>("#app")!, {
+      storage: memoryStorage(),
+      languages: ["en"],
+      prefersDark: false,
+    });
+    document.querySelector<HTMLButtonElement>("[data-start-cook]")!.click();
+    document
+      .querySelector<HTMLDialogElement>("[data-cook-dialog]")!
+      .dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    document.querySelector<HTMLButtonElement>("[data-cook-locale]")!.click();
+
+    expect(document.querySelector("[data-cook-count]")?.textContent).toBe("Étape 2 sur 2");
+    expect(document.querySelector("[data-cook-step]")?.textContent).toBe(
+      "Cuire de fines couches dans une poêle chaude.",
+    );
+    expect(document.querySelector("[data-next-step]")?.textContent).toBe("Terminer");
+    expect(document.querySelector("[data-wake-status]")?.textContent).toBe(
+      "Gardez l’écran allumé dans les réglages de l’appareil.",
+    );
   });
 });
 

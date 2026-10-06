@@ -56,6 +56,17 @@
     "clearChecked": "Effacer les articles cochés",
     "cleared": "{count} articles cochés effacés"
   },
+  "cook": {
+    "start": "Commencer à cuisiner",
+    "close": "Fermer",
+    "mode": "Mode cuisine",
+    "stepCount": "Étape {step} sur {count}",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "finish": "Terminer",
+    "awake": "L’écran reste allumé",
+    "wakeFallback": "Gardez l’écran allumé dans les réglages de l’appareil."
+  },
   "editor": {
     "addTitle": "Ajouter une recette",
     "editTitle": "Modifier la recette",

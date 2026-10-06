@@ -56,6 +56,17 @@
     "clearChecked": "Clear checked",
     "cleared": "{count} checked items cleared"
   },
+  "cook": {
+    "start": "Start cooking",
+    "close": "Close",
+    "mode": "Cook mode",
+    "stepCount": "Step {step} of {count}",
+    "previous": "Previous",
+    "next": "Next",
+    "finish": "Finish",
+    "awake": "Screen stays awake",
+    "wakeFallback": "Keep your screen awake in device settings."
+  },
   "editor": {
     "addTitle": "Add a recipe",
     "editTitle": "Edit recipe",
