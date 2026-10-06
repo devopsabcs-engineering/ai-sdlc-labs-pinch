@@ -5,14 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "preview": "vite preview",
     "build": "tsc --noEmit && vite build",
-    "lint": "eslint src scripts vite.config.ts",
+    "lint": "eslint src scripts e2e playwright.config.ts vite.config.ts",
     "test": "vitest run",
+    "test:e2e": "npm run build && playwright test",
+    "test:lighthouse": "npm run build && node scripts/check-browser-quality.mjs",
     "i18n-parity": "node scripts/check-i18n-parity.mjs",
     "portable-os": "node scripts/check-portable-os.mjs"
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",
+    "@playwright/test": "1.61.0",
     "@types/node": "24.10.1",
     "eslint": "9.39.1",
     "jsdom": "26.1.0",

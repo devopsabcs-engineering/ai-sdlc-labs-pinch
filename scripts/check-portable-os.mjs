@@ -14,6 +14,8 @@ for (const [name, command] of Object.entries(packageJson.scripts)) {
 
 const sourceUrls = [
   new URL("./check-i18n-parity.mjs", import.meta.url),
+  new URL("./check-browser-quality.mjs", import.meta.url),
+  new URL("../playwright.config.ts", import.meta.url),
   new URL("../vite.config.ts", import.meta.url),
 ];
 for (const url of sourceUrls) {
