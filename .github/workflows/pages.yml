@@ -1,0 +1,104 @@
+name: Deploy GitHub Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      governance_approved:
+        description: Confirm Product Owner, Security Team, and Tech Lead approval
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  quality:
+    name: Quality checks
+    if: ${{ inputs.governance_approved }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install portable Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Check translation parity
+        run: npm run i18n-parity
+
+      - name: Check OS portability
+        run: npm run portable-os
+
+      - name: Run portable Playwright gate
+        run: npm run test:e2e
+
+      - name: Run Lighthouse gate
+        run: npm run test:lighthouse
+
+  build-pages-artifact:
+    name: Build immutable Pages artifact
+    if: ${{ inputs.governance_approved }}
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build with repository base path
+        run: npm run build -- --base=/ai-sdlc-labs-pinch/
+
+      - name: Upload immutable Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy-pages:
+    name: Deploy Pages
+    if: ${{ inputs.governance_approved }}
+    needs: build-pages-artifact
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy immutable Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
