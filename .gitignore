@@ -1,0 +1,7 @@
+.copilot-tracking/
+node_modules/
+dist/
+playwright-report/
+test-results/
+evidence/logs/
+evidence/*-console.txt

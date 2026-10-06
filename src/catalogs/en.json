@@ -1,0 +1,108 @@
+{
+  "meta": {
+    "title": "Pinch — Recipe companion",
+    "description": "Pinch is a private, bilingual recipe companion."
+  },
+  "shell": {
+    "skip": "Skip to content"
+  },
+  "prefs": {
+    "group": "Preferences",
+    "switchTo": "Passer au français",
+    "dark": "Dark theme",
+    "light": "Light theme",
+    "localeChanged": "Language changed to English",
+    "themeChangedDark": "Dark theme selected",
+    "themeChangedLight": "Light theme selected"
+  },
+  "welcome": {
+    "eyebrow": "Recipe companion",
+    "title": "Your kitchen, measured.",
+    "body": "Scale recipes, shop, and cook in English or French. Your recipes stay on this device."
+  },
+  "library": {
+    "eyebrow": "Recipe library",
+    "title": "Your recipes",
+    "empty": "No recipes are stored yet.",
+    "recipeSummary": "{servings} servings · {ingredients} ingredients",
+    "local": "Private by design · stored locally"
+  },
+  "recipe": {
+    "eyebrow": "Recipe",
+    "servings": "Servings",
+    "units": "Units",
+    "metric": "Metric",
+    "imperial": "Imperial",
+    "ingredients": "Ingredients",
+    "makes": "Makes {servings} servings",
+    "makesOne": "Makes 1 serving",
+    "decrease": "Decrease servings",
+    "increase": "Increase servings",
+    "minimum": "Minimum 1 serving",
+    "scaled": "Scaled for {servings} servings",
+    "scaledOne": "Scaled for 1 serving",
+    "unitsChanged": "{units} units selected",
+    "asWritten": "As written",
+    "emptyTitle": "No recipe selected",
+    "empty": "Add or import a recipe to begin."
+  },
+  "shopping": {
+    "eyebrow": "Shopping list",
+    "title": "Shopping list ({count})",
+    "empty": "Add ingredients from the recipe.",
+    "add": "Add {count} ingredients",
+    "added": "{count} ingredients added for {servings} servings",
+    "collected": "{checked} of {count} collected",
+    "clearChecked": "Clear checked",
+    "cleared": "{count} checked items cleared"
+  },
+  "cook": {
+    "start": "Start cooking",
+    "close": "Close",
+    "mode": "Cook mode",
+    "stepCount": "Step {step} of {count}",
+    "previous": "Previous",
+    "next": "Next",
+    "finish": "Finish",
+    "awake": "Screen stays awake",
+    "wakeFallback": "Keep your screen awake in device settings."
+  },
+  "editor": {
+    "addTitle": "Add a recipe",
+    "editTitle": "Edit recipe",
+    "manage": "Manage recipes",
+    "title": "Title",
+    "servings": "Servings",
+    "ingredients": "Ingredients, one per line",
+    "steps": "Steps, one per line"
+  },
+  "actions": {
+    "open": "Open",
+    "save": "Save recipe",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "export": "Export JSON",
+    "import": "Import JSON",
+    "clear": "Clear all"
+  },
+  "confirm": {
+    "delete": "Delete this recipe?",
+    "clear": "Clear every recipe and all local data? This cannot be undone."
+  },
+  "data": {
+    "title": "Local data",
+    "saved": "Recipe saved.",
+    "deleted": "Recipe deleted.",
+    "imported": "Data imported.",
+    "cleared": "All local data cleared.",
+    "error": {
+      "invalid": "That data is not valid Pinch JSON. Nothing was changed.",
+      "storage": "Pinch could not save on this device. Nothing was changed.",
+      "notFound": "That recipe no longer exists. Nothing was changed."
+    }
+  },
+  "footer": {
+    "note": "No account. No tracking. Just cooking."
+  }
+}

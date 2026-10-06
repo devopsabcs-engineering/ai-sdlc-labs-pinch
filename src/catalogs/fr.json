@@ -1,0 +1,108 @@
+{
+  "meta": {
+    "title": "Pinch — Compagnon de recettes",
+    "description": "Pinch est un compagnon de recettes privé et bilingue."
+  },
+  "shell": {
+    "skip": "Aller au contenu"
+  },
+  "prefs": {
+    "group": "Préférences",
+    "switchTo": "Switch to English",
+    "dark": "Thème sombre",
+    "light": "Thème clair",
+    "localeChanged": "Langue changée pour le français",
+    "themeChangedDark": "Thème sombre sélectionné",
+    "themeChangedLight": "Thème clair sélectionné"
+  },
+  "welcome": {
+    "eyebrow": "Compagnon de recettes",
+    "title": "Votre cuisine, bien mesurée.",
+    "body": "Adaptez vos recettes, magasinez et cuisinez en français ou en anglais. Vos recettes restent sur cet appareil."
+  },
+  "library": {
+    "eyebrow": "Livre de recettes",
+    "title": "Vos recettes",
+    "empty": "Aucune recette n'est encore enregistrée.",
+    "recipeSummary": "{servings} portions · {ingredients} ingrédients",
+    "local": "Privé par conception · stocké localement"
+  },
+  "recipe": {
+    "eyebrow": "Recette",
+    "servings": "Portions",
+    "units": "Unités",
+    "metric": "Métrique",
+    "imperial": "Impérial",
+    "ingredients": "Ingrédients",
+    "makes": "Donne {servings} portions",
+    "makesOne": "Donne 1 portion",
+    "decrease": "Réduire le nombre de portions",
+    "increase": "Augmenter le nombre de portions",
+    "minimum": "Minimum : 1 portion",
+    "scaled": "Ajustée pour {servings} portions",
+    "scaledOne": "Ajustée pour 1 portion",
+    "unitsChanged": "Unités {units} sélectionnées",
+    "asWritten": "Tel qu’écrit",
+    "emptyTitle": "Aucune recette sélectionnée",
+    "empty": "Ajoutez ou importez une recette pour commencer."
+  },
+  "shopping": {
+    "eyebrow": "Liste de courses",
+    "title": "Liste de courses ({count})",
+    "empty": "Ajoutez les ingrédients de la recette.",
+    "add": "Ajouter {count} ingrédients",
+    "added": "{count} ingrédients ajoutés pour {servings} portions",
+    "collected": "{checked} article(s) sur {count} ramassé(s)",
+    "clearChecked": "Effacer les articles cochés",
+    "cleared": "{count} articles cochés effacés"
+  },
+  "cook": {
+    "start": "Commencer à cuisiner",
+    "close": "Fermer",
+    "mode": "Mode cuisine",
+    "stepCount": "Étape {step} sur {count}",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "finish": "Terminer",
+    "awake": "L’écran reste allumé",
+    "wakeFallback": "Gardez l’écran allumé dans les réglages de l’appareil."
+  },
+  "editor": {
+    "addTitle": "Ajouter une recette",
+    "editTitle": "Modifier la recette",
+    "manage": "Gérer les recettes",
+    "title": "Titre",
+    "servings": "Portions",
+    "ingredients": "Ingrédients, un par ligne",
+    "steps": "Étapes, une par ligne"
+  },
+  "actions": {
+    "open": "Ouvrir",
+    "save": "Enregistrer la recette",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "export": "Exporter le JSON",
+    "import": "Importer le JSON",
+    "clear": "Tout effacer"
+  },
+  "confirm": {
+    "delete": "Supprimer cette recette?",
+    "clear": "Effacer toutes les recettes et les données locales? Cette action est irréversible."
+  },
+  "data": {
+    "title": "Données locales",
+    "saved": "Recette enregistrée.",
+    "deleted": "Recette supprimée.",
+    "imported": "Données importées.",
+    "cleared": "Toutes les données locales ont été effacées.",
+    "error": {
+      "invalid": "Ces données ne sont pas du JSON Pinch valide. Aucun changement effectué.",
+      "storage": "Pinch n'a pas pu enregistrer sur cet appareil. Aucun changement effectué.",
+      "notFound": "Cette recette n'existe plus. Aucun changement effectué."
+    }
+  },
+  "footer": {
+    "note": "Sans compte. Sans suivi. Que de la cuisine."
+  }
+}

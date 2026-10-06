@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Pinch — Crepes</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#recipe">Skip to recipe</a>
+
+    <header class="site-header">
+      <div class="header-inner">
+        <span class="brand" aria-label="Pinch">PINCH</span>
+        <div class="preferences" aria-label="Preferences">
+          <button class="quiet-button language-button" type="button">FR</button>
+          <button class="quiet-button theme-button" type="button">
+            <span aria-hidden="true">◐</span>
+            <span class="theme-label">Dark theme</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section id="recipe" class="recipe-panel" aria-labelledby="recipe-title">
+        <p class="eyebrow" data-copy="recipe">Recipe</p>
+        <h1 id="recipe-title" tabindex="-1">Crepes</h1>
+        <div class="measure-rule" aria-hidden="true"><span></span></div>
+        <p class="yield" id="yield-copy">Makes 4 servings</p>
+
+        <div class="recipe-tools">
+          <div class="serving-control">
+            <span id="servings-label" class="control-label">Servings</span>
+            <div class="stepper" role="group" aria-labelledby="servings-label">
+              <button
+                id="decrease"
+                type="button"
+                aria-label="Decrease servings"
+              >
+                −
+              </button>
+              <output id="servings" aria-live="off">4</output>
+              <button
+                id="increase"
+                type="button"
+                aria-label="Increase servings"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <div class="unit-control">
+            <span id="units-label" class="control-label">Units</span>
+            <div class="segments" role="group" aria-labelledby="units-label">
+              <button id="metric" type="button" aria-pressed="true">
+                Metric
+              </button>
+              <button id="imperial" type="button" aria-pressed="false">
+                Imperial
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <h2 data-copy="ingredients">Ingredients</h2>
+        <ul id="ingredients" class="ingredient-list"></ul>
+
+        <div class="recipe-actions">
+          <button id="add-ingredients" class="secondary-button" type="button">
+            Add 4 ingredients
+          </button>
+          <button id="start-cooking" class="primary-button" type="button">
+            <span data-copy="start">Start cooking</span
+            ><span aria-hidden="true">→</span>
+          </button>
+        </div>
+        <p
+          id="app-status"
+          class="status"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        ></p>
+      </section>
+
+      <aside
+        id="shopping"
+        class="shopping-panel"
+        aria-labelledby="shopping-title"
+      >
+        <div class="shopping-heading">
+          <div>
+            <p class="eyebrow" data-copy="list">Shopping list</p>
+            <h2 id="shopping-title" tabindex="-1">
+              Shopping list <span id="shopping-count">(0)</span>
+            </h2>
+          </div>
+          <span id="list-context" class="list-context"></span>
+        </div>
+        <p id="empty-list">Add ingredients from the recipe.</p>
+        <ul id="shopping-list" class="checklist"></ul>
+        <button
+          id="clear-checked"
+          class="quiet-button clear-button"
+          type="button"
+          disabled
+        >
+          Clear checked
+        </button>
+      </aside>
+    </main>
+
+    <nav class="mobile-nav" aria-label="Primary">
+      <button id="show-recipe" type="button" aria-current="page">
+        <span data-copy="recipe">Recipe</span>
+      </button>
+      <button id="show-shopping" type="button">
+        <span data-copy="list">Shopping list</span>
+        <span id="nav-count">(0)</span>
+      </button>
+    </nav>
+
+    <dialog id="cook-dialog" aria-labelledby="cook-heading">
+      <div class="cook-shell">
+        <header class="cook-header">
+          <button id="close-cook" class="quiet-button" type="button">
+            × <span data-copy="close">Close</span>
+          </button>
+          <p id="step-count">1 of 3</p>
+          <div class="preferences" aria-label="Preferences">
+            <button class="quiet-button language-button" type="button">
+              FR
+            </button>
+            <button class="quiet-button theme-button" type="button">
+              <span aria-hidden="true">◐</span>
+              <span class="theme-label">Dark theme</span>
+            </button>
+          </div>
+        </header>
+
+        <section class="cook-step">
+          <p class="eyebrow" data-copy="cookMode">Cook mode</p>
+          <h2 id="cook-heading" tabindex="-1">
+            Whisk the flour and eggs until smooth.
+          </h2>
+          <p id="wake-status" class="wake-status"></p>
+        </section>
+
+        <footer class="cook-actions">
+          <button id="previous-step" class="secondary-button" type="button">
+            ← Previous
+          </button>
+          <button id="next-step" class="primary-button" type="button">
+            Next →
+          </button>
+        </footer>
+      </div>
+    </dialog>
+  </body>
+</html>
