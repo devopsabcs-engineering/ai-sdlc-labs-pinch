@@ -1,16 +1,47 @@
 # T-012 critic review evidence
 
-Reviewed the committed `feature/pinch` implementation through `df9664b`, the PRD and quantity
-parsing ADR, and `evidence/qa/T-011-qa.md`.
+## Original review
 
-## Findings
+The original review of committed `feature/pinch` through `df9664b` found two blocking defects:
 
-| File/line | Severity | Confidence | Finding |
-| --- | --- | --- | --- |
-| `src/quantity.ts:212-226` | High | High | Unknown units are not preserved as required by R2.2 and ADR-002. Any numeric line whose first token is not one of four hard-coded pinch aliases falls back to `count`; for example, `2 quarts milk` is parsed and scaled instead of remaining exactly as written. This also causes such lines to be merged as fabricated count quantities in the shopping list, contrary to R4.3. Remove the guessed count fallback for unit-bearing unknowns (while retaining intentional unitless counts), and add quantity, display, and shopping regression tests for an unsupported unit. |
-| `scripts/check-browser-quality.mjs:6-65` | High | High | The required Lighthouse-style performance check is not implemented. The script applies no throttling, computes only raw navigation duration, and passes for every non-negative value; it never calculates or enforces the product brief's performance score of at least 0.9. The T-011 “test:lighthouse” result therefore does not establish this requirement. Add a reproducible throttled Lighthouse-equivalent measurement with a `>= 0.9` assertion and record the actual result. |
+1. unsupported unit-bearing lines were guessed to be counts, then scaled and merged; and
+2. `test:lighthouse` neither applied reproducible throttling nor computed and enforced the required
+   performance score.
 
-## Gate conclusion
+The original verification passed build, lint, format, and 73 unit tests, but the **critic-review
+gate failed** on those findings.
 
-`npm run build`, `npm run lint`, `npm run format:check`, and `npm test` passed (5 files, 73 tests).
-The **critic-review gate fails** because the two blocking findings above remain unresolved.
+## Remediation verification
+
+Re-reviewed remediation commits `dfdf3a5` and `3693d41` against the product brief and ADR-002.
+
+- `src/quantity.ts` now leaves an unrecognized multi-token unit-bearing line such as
+  `2 quarts milk` unparsed. Parser and rendered-display regressions confirm that its exact text is
+  retained, and the shopping regression confirms duplicate unsupported lines remain separate
+  rather than scaling or merging as counts.
+- Intentional unitless counts remain supported: the existing `3 eggs` parser regression still
+  produces canonical count quantity `3`, and the unchanged scale/display path scales parsed
+  canonical counts. The sample recipe's `2 eggs` line also remains in this supported form.
+- `scripts/check-browser-quality.mjs` now fixes network latency and throughput, disables cache,
+  applies 4x CPU slowdown, collects FCP/LCP/TBT/CLS, computes a Lighthouse-style weighted score,
+  reports the actual metrics, and throws when the score is below `0.900`.
+- Review of the remediation diff and regression coverage found no new high-confidence blocking
+  defect.
+
+## Actual results
+
+| Verification | Result |
+| --- | --- |
+| `npm test -- src/quantity.test.ts src/app.test.ts src/shopping.test.ts` | Passed: 3 files, 61 tests |
+| `npm run test:lighthouse` | Passed, including production build |
+| Throttled score | **1.000** (minimum **0.900**) |
+| Throttled metrics | FCP 456 ms; LCP 540 ms; TBT 17 ms; CLS 0.000 |
+| `git diff e76c35a..HEAD --check` | Passed |
+
+Only the previously failed critic-review gate and its smallest relevant regression set were rerun.
+Unrelated untracked evidence files were left unchanged.
+
+## Final gate conclusion
+
+Both prior blocking findings are resolved. The **T-012 critic-review gate passes** with no remaining
+blocking review findings.
