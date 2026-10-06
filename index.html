@@ -28,7 +28,7 @@
         </div>
       </header>
 
-      <main id="main-content" class="workspace" tabindex="-1">
+      <main id="main-content" class="workspace library-workspace" tabindex="-1">
         <section class="welcome" aria-labelledby="page-title">
           <p class="eyebrow" data-i18n="welcome.eyebrow">Recipe companion</p>
           <h1 id="page-title" data-i18n="welcome.title">Your kitchen, measured.</h1>
@@ -41,8 +41,30 @@
         <section class="shell-panel" aria-labelledby="library-title">
           <div>
             <p class="eyebrow" data-i18n="library.eyebrow">Recipe library</p>
-            <h2 id="library-title" data-i18n="library.title">Recipes will live here</h2>
-            <p data-i18n="library.empty">Your saved and sample recipes will appear in this space.</p>
+            <h2 id="library-title" data-i18n="library.title">Your recipes</h2>
+            <div class="recipe-list" data-recipe-list></div>
+            <section class="recipe-editor" aria-labelledby="editor-title">
+              <h3 id="editor-title" data-form-title>Add a recipe</h3>
+              <form data-recipe-form>
+                <label><span data-i18n="editor.title">Title</span><input name="title" required /></label>
+                <label><span data-i18n="editor.servings">Servings</span><input name="servings" type="number" min="1" step="1" required /></label>
+                <label><span data-i18n="editor.ingredients">Ingredients, one per line</span><textarea name="ingredients" rows="4" required></textarea></label>
+                <label><span data-i18n="editor.steps">Steps, one per line</span><textarea name="steps" rows="4" required></textarea></label>
+                <div class="card-actions">
+                  <button class="primary-button" type="submit" data-i18n="actions.save">Save recipe</button>
+                  <button type="button" data-cancel-edit hidden>Cancel</button>
+                </div>
+              </form>
+            </section>
+            <section class="data-tools" aria-labelledby="data-title">
+              <h3 id="data-title" data-i18n="data.title">Local data</h3>
+              <div class="card-actions">
+                <a class="button-link" data-export data-i18n="actions.export">Export JSON</a>
+                <label class="button-link file-button"><span data-i18n="actions.import">Import JSON</span><input id="import-data" type="file" accept="application/json,.json" /></label>
+                <button type="button" data-clear data-i18n="actions.clear">Clear all</button>
+              </div>
+              <p class="data-status" role="status" aria-live="polite" data-data-status></p>
+            </section>
           </div>
           <p class="local-note" data-i18n="library.local">Private by design · stored locally</p>
         </section>

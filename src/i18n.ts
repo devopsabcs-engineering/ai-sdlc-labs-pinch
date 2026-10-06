@@ -6,7 +6,11 @@ type Catalog = typeof en;
 
 const catalogs: Record<Locale, Catalog> = { en, fr };
 
-export function translate(locale: Locale, key: string): string {
+export function translate(
+  locale: Locale,
+  key: string,
+  values: Readonly<Record<string, string | number>> = {},
+): string {
   let value: unknown = catalogs[locale];
 
   for (const segment of key.split(".")) {
@@ -19,5 +23,9 @@ export function translate(locale: Locale, key: string): string {
   if (typeof value !== "string") {
     throw new Error(`Translation is not a string: ${key}`);
   }
-  return value;
+  return Object.entries(values).reduce(
+    (message, [name, replacement]) =>
+      message.replaceAll(`{${name}}`, String(replacement)),
+    value,
+  );
 }

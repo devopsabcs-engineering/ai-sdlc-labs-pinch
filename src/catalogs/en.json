@@ -22,9 +22,43 @@
   },
   "library": {
     "eyebrow": "Recipe library",
-    "title": "Recipes will live here",
-    "empty": "Your saved and sample recipes will appear in this space.",
+    "title": "Your recipes",
+    "empty": "No recipes are stored yet.",
+    "recipeSummary": "{servings} servings · {ingredients} ingredients",
     "local": "Private by design · stored locally"
+  },
+  "editor": {
+    "addTitle": "Add a recipe",
+    "editTitle": "Edit recipe",
+    "title": "Title",
+    "servings": "Servings",
+    "ingredients": "Ingredients, one per line",
+    "steps": "Steps, one per line"
+  },
+  "actions": {
+    "save": "Save recipe",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "export": "Export JSON",
+    "import": "Import JSON",
+    "clear": "Clear all"
+  },
+  "confirm": {
+    "delete": "Delete this recipe?",
+    "clear": "Clear every recipe and all local data? This cannot be undone."
+  },
+  "data": {
+    "title": "Local data",
+    "saved": "Recipe saved.",
+    "deleted": "Recipe deleted.",
+    "imported": "Data imported.",
+    "cleared": "All local data cleared.",
+    "error": {
+      "invalid": "That data is not valid Pinch JSON. Nothing was changed.",
+      "storage": "Pinch could not save on this device. Nothing was changed.",
+      "notFound": "That recipe no longer exists. Nothing was changed."
+    }
   },
   "footer": {
     "note": "No account. No tracking. Just cooking."

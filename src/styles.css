@@ -66,7 +66,9 @@ body {
 }
 
 button,
-a {
+a,
+input,
+textarea {
   font: inherit;
 }
 
@@ -84,6 +86,25 @@ button {
 
 button:hover {
   background: var(--color-surface-raised);
+}
+
+.button-link {
+  display: inline-flex;
+  min-height: var(--control-min);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  align-items: center;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary-button {
+  background: var(--color-action);
+  color: var(--color-on-action);
 }
 
 :focus-visible {
@@ -152,6 +173,80 @@ button:hover {
 .shell-panel {
   min-width: 0;
   padding: clamp(var(--space-8), 6vw, 5rem);
+}
+
+.library-workspace {
+  grid-template-columns: minmax(15rem, 0.7fr) minmax(20rem, 1.3fr);
+}
+
+.library-workspace .welcome {
+  align-self: start;
+}
+
+.recipe-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.recipe-card {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+}
+
+.recipe-card h3,
+.recipe-card p {
+  margin-top: 0;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.recipe-editor,
+.data-tools {
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.recipe-editor form,
+.recipe-editor label {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.recipe-editor form {
+  gap: var(--space-4);
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+textarea {
+  resize: vertical;
+}
+
+.file-button input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.data-status {
+  min-height: 1.5em;
+  color: var(--color-text-muted);
 }
 
 .welcome {

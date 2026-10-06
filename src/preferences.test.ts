@@ -14,15 +14,17 @@ describe("preferences", () => {
     expect(loadPreferences(memoryStorage(), ["fr-CA", "en"], true)).toEqual({
       locale: "fr",
       theme: "dark",
+      unitSystem: "metric",
     });
   });
 
   it("round-trips an explicit preference", () => {
     const storage = memoryStorage();
-    savePreferences(storage, { locale: "en", theme: "light" });
+    savePreferences(storage, { locale: "en", theme: "light", unitSystem: "imperial" });
     expect(loadPreferences(storage, ["fr"], true)).toEqual({
       locale: "en",
       theme: "light",
+      unitSystem: "imperial",
     });
   });
 
@@ -32,6 +34,7 @@ describe("preferences", () => {
     expect(loadPreferences(storage, ["en"], false)).toEqual({
       locale: "en",
       theme: "light",
+      unitSystem: "metric",
     });
   });
 });

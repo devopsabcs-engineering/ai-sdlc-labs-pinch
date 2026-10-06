@@ -22,9 +22,43 @@
   },
   "library": {
     "eyebrow": "Livre de recettes",
-    "title": "Vos recettes seront ici",
-    "empty": "Vos recettes enregistrées et nos exemples apparaîtront dans cet espace.",
+    "title": "Vos recettes",
+    "empty": "Aucune recette n'est encore enregistrée.",
+    "recipeSummary": "{servings} portions · {ingredients} ingrédients",
     "local": "Privé par conception · stocké localement"
+  },
+  "editor": {
+    "addTitle": "Ajouter une recette",
+    "editTitle": "Modifier la recette",
+    "title": "Titre",
+    "servings": "Portions",
+    "ingredients": "Ingrédients, un par ligne",
+    "steps": "Étapes, une par ligne"
+  },
+  "actions": {
+    "save": "Enregistrer la recette",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "export": "Exporter le JSON",
+    "import": "Importer le JSON",
+    "clear": "Tout effacer"
+  },
+  "confirm": {
+    "delete": "Supprimer cette recette?",
+    "clear": "Effacer toutes les recettes et les données locales? Cette action est irréversible."
+  },
+  "data": {
+    "title": "Données locales",
+    "saved": "Recette enregistrée.",
+    "deleted": "Recette supprimée.",
+    "imported": "Données importées.",
+    "cleared": "Toutes les données locales ont été effacées.",
+    "error": {
+      "invalid": "Ces données ne sont pas du JSON Pinch valide. Aucun changement effectué.",
+      "storage": "Pinch n'a pas pu enregistrer sur cet appareil. Aucun changement effectué.",
+      "notFound": "Cette recette n'existe plus. Aucun changement effectué."
+    }
   },
   "footer": {
     "note": "Sans compte. Sans suivi. Que de la cuisine."
