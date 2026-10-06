@@ -38,6 +38,7 @@ describe("ingredient quantity parsing", () => {
     "2",
     "2 pinches salt",
     "1 pincée de sel",
+    "2 quarts milk",
   ])("preserves malformed or unparsed line %j", (line) => {
     expect(parseIngredientLine(line)).toEqual({ originalText: line });
   });

@@ -446,5 +446,11 @@ describe("recipe ingredient display", () => {
       name: "salt to taste",
       parsed: false,
     });
+    expect(formatIngredient("2 quarts milk", 4, 8, "metric", "en")).toEqual({
+      amount: "",
+      unit: "",
+      name: "2 quarts milk",
+      parsed: false,
+    });
   });
 });

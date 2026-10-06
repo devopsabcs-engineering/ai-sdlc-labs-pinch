@@ -213,6 +213,10 @@ export function parseIngredientLine(originalText: string): Ingredient {
   if (firstWord && unsupportedUnitAliases.includes(firstWord)) return result;
 
   const matchedUnit = matchUnit(quantity.rest);
+  // A unitless count is only unambiguous when the ingredient name is a single
+  // token (for example, "3 eggs"). With multiple tokens, the first may be an
+  // unsupported unit ("2 quarts milk"), so preserve the line as written.
+  if (!matchedUnit && /\s/u.test(quantity.rest)) return result;
   const definition = matchedUnit?.definition ?? UNIT_DEFINITIONS.at(-1);
   const name = matchedUnit?.rest ?? quantity.rest;
   if (!definition || !name) return result;

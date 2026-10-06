@@ -48,6 +48,33 @@ describe("shopping list", () => {
     ]);
   });
 
+  it("preserves unsupported units without scaling or merging them", () => {
+    const result = addShoppingIngredients(
+      [],
+      [
+        { text: "2 quarts milk", baseServings: 4, targetServings: 8 },
+        { text: "2 quarts milk", baseServings: 4, targetServings: 8 },
+      ],
+      ids(),
+    );
+
+    expect(result).toHaveLength(2);
+    expect(result).toEqual([
+      {
+        id: "item-1",
+        name: "2 quarts milk",
+        originalText: "2 quarts milk",
+        checked: false,
+      },
+      {
+        id: "item-2",
+        name: "2 quarts milk",
+        originalText: "2 quarts milk",
+        checked: false,
+      },
+    ]);
+  });
+
   it("checks, unchecks, and clears only checked items", () => {
     const items: ShoppingItem[] = [
       {
