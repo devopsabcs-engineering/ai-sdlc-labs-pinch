@@ -27,15 +27,36 @@
     "recipeSummary": "{servings} servings · {ingredients} ingredients",
     "local": "Private by design · stored locally"
   },
+  "recipe": {
+    "eyebrow": "Recipe",
+    "servings": "Servings",
+    "units": "Units",
+    "metric": "Metric",
+    "imperial": "Imperial",
+    "ingredients": "Ingredients",
+    "makes": "Makes {servings} servings",
+    "makesOne": "Makes 1 serving",
+    "decrease": "Decrease servings",
+    "increase": "Increase servings",
+    "minimum": "Minimum 1 serving",
+    "scaled": "Scaled for {servings} servings",
+    "scaledOne": "Scaled for 1 serving",
+    "unitsChanged": "{units} units selected",
+    "asWritten": "As written",
+    "emptyTitle": "No recipe selected",
+    "empty": "Add or import a recipe to begin."
+  },
   "editor": {
     "addTitle": "Add a recipe",
     "editTitle": "Edit recipe",
+    "manage": "Manage recipes",
     "title": "Title",
     "servings": "Servings",
     "ingredients": "Ingredients, one per line",
     "steps": "Steps, one per line"
   },
   "actions": {
+    "open": "Open",
     "save": "Save recipe",
     "cancel": "Cancel",
     "edit": "Edit",

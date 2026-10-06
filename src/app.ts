@@ -7,7 +7,14 @@ import {
   type Recipe,
 } from "./data";
 import { translate, type Locale } from "./i18n";
-import { loadPreferences, type Preferences, type Theme } from "./preferences";
+import { loadPreferences, type Preferences, type Theme, type UnitSystem } from "./preferences";
+import {
+  convertQuantity,
+  formatQuantity,
+  parseIngredientLine,
+  scaleQuantity,
+  type Unit,
+} from "./quantity";
 
 interface BrowserServices {
   storage: DataStorage;
@@ -17,11 +24,88 @@ interface BrowserServices {
   createId?(): string;
 }
 
+interface RecipeViewState {
+  recipeId: string;
+  servings: number;
+}
+
+interface DisplayIngredient {
+  amount: string;
+  unit: string;
+  name: string;
+  parsed: boolean;
+}
+
+const RECIPE_VIEW_KEY = "pinch.recipe-view.v1";
+
 function lines(value: FormDataEntryValue | null): string[] {
   return String(value ?? "")
     .split(/\r?\n/u)
     .map((line) => line.trim())
     .filter(Boolean);
+}
+
+function loadRecipeView(storage: DataStorage): RecipeViewState | undefined {
+  try {
+    const saved: unknown = JSON.parse(storage.getItem(RECIPE_VIEW_KEY) ?? "null");
+    if (
+      typeof saved === "object" &&
+      saved !== null &&
+      typeof (saved as RecipeViewState).recipeId === "string" &&
+      Number.isInteger((saved as RecipeViewState).servings) &&
+      (saved as RecipeViewState).servings >= 1
+    ) {
+      return saved as RecipeViewState;
+    }
+  } catch {
+    // A blocked or malformed local store should not prevent startup.
+  }
+  return undefined;
+}
+
+function saveRecipeView(storage: DataStorage, state: RecipeViewState): void {
+  try {
+    storage.setItem(RECIPE_VIEW_KEY, JSON.stringify(state));
+  } catch {
+    // The view remains usable for the current session if storage is unavailable.
+  }
+}
+
+function displayUnit(canonicalQuantity: number, canonicalUnit: Unit, system: UnitSystem): Unit {
+  if (canonicalUnit === "count") return "count";
+  if (system === "imperial") return canonicalUnit === "g" ? "oz" : "cup";
+  if (canonicalUnit === "g" && canonicalQuantity >= 1000) return "kg";
+  if (canonicalUnit === "mL" && canonicalQuantity >= 1000) return "L";
+  return canonicalUnit;
+}
+
+export function formatIngredient(
+  line: string,
+  baseServings: number,
+  targetServings: number,
+  unitSystem: UnitSystem,
+  locale: Locale,
+): DisplayIngredient {
+  const ingredient = parseIngredientLine(line);
+  if (!ingredient.parsed) {
+    return { amount: "", unit: "", name: line, parsed: false };
+  }
+
+  const scaled = scaleQuantity(ingredient.parsed.quantity, baseServings, targetServings);
+  if (scaled === undefined) {
+    return { amount: "", unit: "", name: line, parsed: false };
+  }
+  const unit = displayUnit(scaled, ingredient.parsed.unit, unitSystem);
+  const converted = convertQuantity(scaled, ingredient.parsed.unit, unit);
+  if (converted === undefined) {
+    return { amount: "", unit: "", name: line, parsed: false };
+  }
+  return {
+    amount: formatQuantity(converted, unit, locale),
+    unit: unit === "count" ? "" : unit,
+    name: ingredient.parsed.name,
+    parsed: true,
+  };
 }
 
 export function startApp(
@@ -39,6 +123,9 @@ export function startApp(
   const repository = opened.ok ? opened.value : undefined;
   let preferences = repository?.snapshot().preferences ?? defaults;
   let editingId: string | undefined;
+  const storedView = loadRecipeView(services.storage);
+  let selectedRecipeId = storedView?.recipeId;
+  let targetServings = storedView?.servings;
 
   const localeButton = root.querySelector<HTMLButtonElement>("#locale-toggle");
   const themeButton = root.querySelector<HTMLButtonElement>("#theme-toggle");
@@ -67,10 +154,112 @@ export function startApp(
     throw new Error("The application shell is incomplete.");
   }
 
+  const recipeTitle = root.querySelector<HTMLElement>("[data-recipe-title]");
+  const recipeYield = root.querySelector<HTMLElement>("[data-recipe-yield]");
+  const ingredientList = root.querySelector<HTMLElement>("[data-ingredient-list]");
+  const servingOutput = root.querySelector<HTMLOutputElement>("[data-servings]");
+  const decreaseButton = root.querySelector<HTMLButtonElement>("[data-decrease]");
+  const increaseButton = root.querySelector<HTMLButtonElement>("[data-increase]");
+  const unitButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-unit]")];
+  const recipeStatus = root.querySelector<HTMLElement>("[data-recipe-status]");
+  const measureFill = root.querySelector<HTMLElement>("[data-measure-fill]");
+  const hasRecipeView =
+    recipeTitle &&
+    recipeYield &&
+    ingredientList &&
+    servingOutput &&
+    decreaseButton &&
+    increaseButton &&
+    recipeStatus &&
+    measureFill &&
+    unitButtons.length === 2;
+
   const announceFailure = (result: DataResult<unknown>): boolean => {
     if (result.ok) return false;
     dataStatus.textContent = translate(preferences.locale, `data.error.${result.error}`);
     return true;
+  };
+
+  const recipes = (): Recipe[] => repository?.snapshot().recipes ?? [];
+
+  const selectedRecipe = (): Recipe | undefined => {
+    const available = recipes();
+    const selected = available.find(({ id }) => id === selectedRecipeId) ?? available[0];
+    if (selected && selected.id !== selectedRecipeId) {
+      selectedRecipeId = selected.id;
+      targetServings = selected.baseServings;
+      saveRecipeView(services.storage, {
+        recipeId: selected.id,
+        servings: selected.baseServings,
+      });
+    }
+    return selected;
+  };
+
+  const renderRecipe = (): void => {
+    if (!hasRecipeView) return;
+    const recipe = selectedRecipe();
+    if (!recipe) {
+      recipeTitle.textContent = translate(preferences.locale, "recipe.emptyTitle");
+      recipeYield.textContent = translate(preferences.locale, "recipe.empty");
+      ingredientList.replaceChildren();
+      decreaseButton.disabled = true;
+      increaseButton.disabled = true;
+      return;
+    }
+
+    const servings = targetServings ?? recipe.baseServings;
+    targetServings = servings;
+    recipeTitle.textContent = localize(recipe.title, preferences.locale);
+    recipeYield.textContent = translate(
+      preferences.locale,
+      servings === 1 ? "recipe.makesOne" : "recipe.makes",
+      {
+      servings,
+      },
+    );
+    servingOutput.value = String(servings);
+    servingOutput.textContent = String(servings);
+    decreaseButton.disabled = servings <= 1;
+    decreaseButton.setAttribute("aria-label", translate(preferences.locale, "recipe.decrease"));
+    increaseButton.setAttribute("aria-label", translate(preferences.locale, "recipe.increase"));
+    measureFill.style.width = `${Math.min(100, Math.max(12, (servings / recipe.baseServings) * 42))}%`;
+
+    for (const button of unitButtons) {
+      const system = button.dataset.unit as UnitSystem;
+      button.textContent = translate(preferences.locale, `recipe.${system}`);
+      button.setAttribute("aria-pressed", String(system === preferences.unitSystem));
+    }
+
+    ingredientList.replaceChildren(
+      ...recipe.ingredients.map((localizedLine) => {
+        const line = localize(localizedLine, preferences.locale);
+        const display = formatIngredient(
+          line,
+          recipe.baseServings,
+          servings,
+          preferences.unitSystem,
+          preferences.locale,
+        );
+        const item = document.createElement("li");
+        if (!display.parsed) {
+          item.className = "unparsed-ingredient";
+          const original = document.createElement("span");
+          original.textContent = display.name;
+          const note = document.createElement("small");
+          note.textContent = translate(preferences.locale, "recipe.asWritten");
+          item.append(original, note);
+          return item;
+        }
+        const amount = document.createElement("span");
+        amount.className = "amount";
+        amount.textContent = `${display.amount}${display.unit ? ` ${display.unit}` : ""}`;
+        const name = document.createElement("span");
+        name.textContent = display.name;
+        item.append(amount, name);
+        return item;
+      }),
+    );
   };
 
   const resetForm = (): void => {
@@ -103,21 +292,36 @@ export function startApp(
     if (title instanceof HTMLElement) title.focus();
   };
 
+  const chooseRecipe = (recipe: Recipe): void => {
+    selectedRecipeId = recipe.id;
+    targetServings = recipe.baseServings;
+    recipeStatus?.replaceChildren();
+    saveRecipeView(services.storage, {
+      recipeId: recipe.id,
+      servings: recipe.baseServings,
+    });
+    renderRecipes();
+    renderRecipe();
+    recipeTitle?.focus({ preventScroll: true });
+  };
+
   const renderRecipes = (): void => {
     exportLink.href = repository
       ? `data:application/json;charset=utf-8,${encodeURIComponent(repository.exportJson())}`
       : "#";
     list.replaceChildren();
-    const recipes = repository?.snapshot().recipes ?? [];
-    if (recipes.length === 0) {
+    const available = recipes();
+    if (available.length === 0) {
       const empty = document.createElement("p");
       empty.textContent = translate(preferences.locale, "library.empty");
       list.append(empty);
+      renderRecipe();
       return;
     }
-    for (const recipe of recipes) {
+    for (const recipe of available) {
       const item = document.createElement("article");
       item.className = "recipe-card";
+      if (recipe.id === selectedRecipe()?.id) item.classList.add("is-current");
       const heading = document.createElement("h3");
       heading.textContent = localize(recipe.title, preferences.locale);
       const summary = document.createElement("p");
@@ -127,6 +331,15 @@ export function startApp(
       });
       const actions = document.createElement("div");
       actions.className = "card-actions";
+      const open = document.createElement("button");
+      open.type = "button";
+      open.textContent = translate(preferences.locale, "actions.open");
+      open.setAttribute(
+        "aria-label",
+        `${translate(preferences.locale, "actions.open")} ${localize(recipe.title, preferences.locale)}`,
+      );
+      if (recipe.id === selectedRecipe()?.id) open.setAttribute("aria-current", "true");
+      open.addEventListener("click", () => chooseRecipe(recipe));
       const edit = document.createElement("button");
       edit.type = "button";
       edit.textContent = translate(preferences.locale, "actions.edit");
@@ -146,10 +359,15 @@ export function startApp(
         if (!announceFailure(result)) {
           dataStatus.textContent = translate(preferences.locale, "data.deleted");
           if (editingId === recipe.id) resetForm();
+          if (selectedRecipeId === recipe.id) {
+            selectedRecipeId = undefined;
+            targetServings = undefined;
+          }
           renderRecipes();
+          renderRecipe();
         }
       });
-      actions.append(edit, remove);
+      actions.append(open, edit, remove);
       item.append(heading, summary, actions);
       list.append(item);
     }
@@ -185,10 +403,8 @@ export function startApp(
     if (!editingId) formTitle.textContent = translate(locale, "editor.addTitle");
     cancelButton.textContent = translate(locale, "actions.cancel");
     exportLink.setAttribute("download", "pinch-data.json");
-    exportLink.href = repository
-      ? `data:application/json;charset=utf-8,${encodeURIComponent(repository.exportJson())}`
-      : "#";
     renderRecipes();
+    renderRecipe();
   };
 
   const updatePreferences = (next: Preferences, announcement: string): void => {
@@ -214,6 +430,54 @@ export function startApp(
       ),
     );
   });
+
+  decreaseButton?.addEventListener("click", () => {
+    const recipe = selectedRecipe();
+    if (!recipe || targetServings === undefined) return;
+    if (targetServings === 1) {
+      recipeStatus!.textContent = translate(preferences.locale, "recipe.minimum");
+      return;
+    }
+    targetServings -= 1;
+    saveRecipeView(services.storage, { recipeId: recipe.id, servings: targetServings });
+    recipeStatus!.textContent = translate(
+      preferences.locale,
+      targetServings === 1 ? "recipe.scaledOne" : "recipe.scaled",
+      {
+      servings: targetServings,
+      },
+    );
+    renderRecipe();
+  });
+
+  increaseButton?.addEventListener("click", () => {
+    const recipe = selectedRecipe();
+    if (!recipe || targetServings === undefined) return;
+    targetServings += 1;
+    saveRecipeView(services.storage, { recipeId: recipe.id, servings: targetServings });
+    recipeStatus!.textContent = translate(preferences.locale, "recipe.scaled", {
+      servings: targetServings,
+    });
+    renderRecipe();
+  });
+
+  for (const button of unitButtons) {
+    button.addEventListener("click", () => {
+      const unitSystem = button.dataset.unit as UnitSystem;
+      if (unitSystem === preferences.unitSystem) return;
+      updatePreferences(
+        { ...preferences, unitSystem },
+        translate(preferences.locale, "recipe.unitsChanged", {
+          units: translate(preferences.locale, `recipe.${unitSystem}`),
+        }),
+      );
+      if (recipeStatus) {
+        recipeStatus.textContent = translate(preferences.locale, "recipe.unitsChanged", {
+          units: translate(preferences.locale, `recipe.${unitSystem}`),
+        });
+      }
+    });
+  }
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -244,8 +508,17 @@ export function startApp(
     const result = repository.saveRecipe(recipe);
     if (!announceFailure(result)) {
       dataStatus.textContent = translate(preferences.locale, "data.saved");
+      if (!previous) {
+        selectedRecipeId = recipe.id;
+        targetServings = recipe.baseServings;
+        saveRecipeView(services.storage, {
+          recipeId: recipe.id,
+          servings: recipe.baseServings,
+        });
+      }
       resetForm();
       renderRecipes();
+      renderRecipe();
     }
   });
 
@@ -258,6 +531,8 @@ export function startApp(
       const result = repository.importJson(await file.text());
       if (result.ok) {
         preferences = result.value.preferences;
+        selectedRecipeId = undefined;
+        targetServings = undefined;
         resetForm();
         dataStatus.textContent = translate(preferences.locale, "data.imported");
         render();
@@ -282,6 +557,8 @@ export function startApp(
     const result = repository.clear();
     if (result.ok) {
       preferences = result.value.preferences;
+      selectedRecipeId = undefined;
+      targetServings = undefined;
       resetForm();
       dataStatus.textContent = translate(preferences.locale, "data.cleared");
       render();

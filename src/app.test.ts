@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { startApp } from "./app";
+import { formatIngredient, startApp } from "./app";
 import { APP_DATA_KEY } from "./data";
 
 const shell = `
@@ -9,6 +9,18 @@ const shell = `
     <button id="locale-toggle"></button>
     <button id="theme-toggle"><span data-theme-label></span></button>
     <p data-preference-status></p>
+    <section data-recipe-view>
+      <h1 data-recipe-title></h1>
+      <p data-recipe-yield></p>
+      <span data-measure-fill></span>
+      <button type="button" data-decrease></button>
+      <output data-servings></output>
+      <button type="button" data-increase></button>
+      <button type="button" data-unit="metric"></button>
+      <button type="button" data-unit="imperial"></button>
+      <ul data-ingredient-list></ul>
+      <p data-recipe-status></p>
+    </section>
     <div data-recipe-list></div>
     <form data-recipe-form>
       <h2 data-form-title></h2>
@@ -139,5 +151,89 @@ describe("application shell", () => {
     confirmed = true;
     clear.click();
     expect(JSON.parse(storage.getItem(APP_DATA_KEY)!).recipes).toHaveLength(0);
+  });
+
+  it("scales the selected recipe and persists its serving state", () => {
+    const storage = memoryStorage();
+    startApp(document.querySelector<HTMLElement>("#app")!, {
+      storage,
+      languages: ["en"],
+      prefersDark: false,
+    });
+
+    document.querySelector<HTMLButtonElement>("[data-increase]")!.click();
+
+    expect(document.querySelector("[data-servings]")?.textContent).toBe("5");
+    expect(document.querySelector("[data-recipe-status]")?.textContent).toBe(
+      "Scaled for 5 servings",
+    );
+    expect(document.querySelector("[data-ingredient-list]")?.textContent).toContain("296 mL");
+
+    document.body.innerHTML = shell;
+    startApp(document.querySelector<HTMLElement>("#app")!, {
+      storage,
+      languages: ["en"],
+      prefersDark: false,
+    });
+    expect(document.querySelector("[data-servings]")?.textContent).toBe("5");
+  });
+
+  it("switches to an imperial display without changing the serving state", () => {
+    const storage = memoryStorage();
+    const state = startApp(document.querySelector<HTMLElement>("#app")!, {
+      storage,
+      languages: ["en"],
+      prefersDark: false,
+    });
+    const imperial = document.querySelector<HTMLButtonElement>('[data-unit="imperial"]')!;
+
+    imperial.click();
+
+    expect(state().unitSystem).toBe("imperial");
+    expect(imperial.getAttribute("aria-pressed")).toBe("true");
+    expect(document.querySelector('[data-unit="metric"]')?.getAttribute("aria-pressed")).toBe(
+      "false",
+    );
+    expect(document.querySelector("[data-ingredient-list]")?.textContent).toContain("1 cup");
+  });
+
+  it("updates recipe content and accessible serving names when language changes", () => {
+    startApp(document.querySelector<HTMLElement>("#app")!, {
+      storage: memoryStorage(),
+      languages: ["en"],
+      prefersDark: false,
+    });
+
+    document.querySelector<HTMLButtonElement>("#locale-toggle")!.click();
+
+    expect(document.querySelector("[data-recipe-title]")?.textContent).toBe(
+      "Crêpes de tous les jours",
+    );
+    expect(document.querySelector("[data-decrease]")?.getAttribute("aria-label")).toBe(
+      "Réduire le nombre de portions",
+    );
+    expect(document.querySelector("[data-ingredient-list]")?.textContent).toContain("farine");
+  });
+});
+
+describe("recipe ingredient display", () => {
+  it("uses existing quantity rules for metric, imperial, and unparsed lines", () => {
+    expect(formatIngredient("1 cup flour", 4, 6, "metric", "en")).toEqual({
+      amount: "355",
+      unit: "mL",
+      name: "flour",
+      parsed: true,
+    });
+    expect(formatIngredient("100 g butter", 4, 4, "imperial", "en")).toMatchObject({
+      amount: "3.53",
+      unit: "oz",
+      parsed: true,
+    });
+    expect(formatIngredient("salt to taste", 4, 6, "imperial", "en")).toEqual({
+      amount: "",
+      unit: "",
+      name: "salt to taste",
+      parsed: false,
+    });
   });
 });

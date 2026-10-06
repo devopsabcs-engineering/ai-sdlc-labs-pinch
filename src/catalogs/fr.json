@@ -27,15 +27,36 @@
     "recipeSummary": "{servings} portions · {ingredients} ingrédients",
     "local": "Privé par conception · stocké localement"
   },
+  "recipe": {
+    "eyebrow": "Recette",
+    "servings": "Portions",
+    "units": "Unités",
+    "metric": "Métrique",
+    "imperial": "Impérial",
+    "ingredients": "Ingrédients",
+    "makes": "Donne {servings} portions",
+    "makesOne": "Donne 1 portion",
+    "decrease": "Réduire le nombre de portions",
+    "increase": "Augmenter le nombre de portions",
+    "minimum": "Minimum : 1 portion",
+    "scaled": "Ajustée pour {servings} portions",
+    "scaledOne": "Ajustée pour 1 portion",
+    "unitsChanged": "Unités {units} sélectionnées",
+    "asWritten": "Tel qu’écrit",
+    "emptyTitle": "Aucune recette sélectionnée",
+    "empty": "Ajoutez ou importez une recette pour commencer."
+  },
   "editor": {
     "addTitle": "Ajouter une recette",
     "editTitle": "Modifier la recette",
+    "manage": "Gérer les recettes",
     "title": "Titre",
     "servings": "Portions",
     "ingredients": "Ingrédients, un par ligne",
     "steps": "Étapes, une par ligne"
   },
   "actions": {
+    "open": "Ouvrir",
     "save": "Enregistrer la recette",
     "cancel": "Annuler",
     "edit": "Modifier",

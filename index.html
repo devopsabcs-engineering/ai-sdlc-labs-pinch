@@ -28,46 +28,73 @@
         </div>
       </header>
 
-      <main id="main-content" class="workspace library-workspace" tabindex="-1">
-        <section class="welcome" aria-labelledby="page-title">
-          <p class="eyebrow" data-i18n="welcome.eyebrow">Recipe companion</p>
-          <h1 id="page-title" data-i18n="welcome.title">Your kitchen, measured.</h1>
-          <div class="measure-rule" aria-hidden="true"><span></span></div>
-          <p class="lede" data-i18n="welcome.body">
-            Scale recipes, shop, and cook in English or French. Your recipes stay on this device.
-          </p>
+      <main id="main-content" class="workspace recipe-workspace" tabindex="-1">
+        <section class="recipe-panel" aria-labelledby="recipe-title" data-recipe-view>
+          <p class="eyebrow" data-i18n="recipe.eyebrow">Recipe</p>
+          <h1 id="recipe-title" tabindex="-1" data-recipe-title></h1>
+          <div class="measure-rule" aria-hidden="true"><span data-measure-fill></span></div>
+          <p class="yield-copy" data-recipe-yield></p>
+
+          <div class="recipe-tools">
+            <div class="serving-control">
+              <span class="control-label" id="servings-label" data-i18n="recipe.servings">
+                Servings
+              </span>
+              <div class="stepper" role="group" aria-labelledby="servings-label">
+                <button type="button" data-decrease aria-label="Decrease servings">−</button>
+                <output data-servings aria-live="off">4</output>
+                <button type="button" data-increase aria-label="Increase servings">+</button>
+              </div>
+            </div>
+
+            <div class="unit-control">
+              <span class="control-label" id="units-label" data-i18n="recipe.units">Units</span>
+              <div class="segments" role="group" aria-labelledby="units-label">
+                <button type="button" data-unit="metric" aria-pressed="true">Metric</button>
+                <button type="button" data-unit="imperial" aria-pressed="false">Imperial</button>
+              </div>
+            </div>
+          </div>
+
+          <h2 data-i18n="recipe.ingredients">Ingredients</h2>
+          <ul class="ingredient-list" data-ingredient-list></ul>
+          <p class="recipe-status" role="status" aria-live="polite" aria-atomic="true" data-recipe-status></p>
         </section>
 
-        <section class="shell-panel" aria-labelledby="library-title">
+        <aside class="shell-panel library-panel" aria-labelledby="library-title">
           <div>
             <p class="eyebrow" data-i18n="library.eyebrow">Recipe library</p>
             <h2 id="library-title" data-i18n="library.title">Your recipes</h2>
             <div class="recipe-list" data-recipe-list></div>
-            <section class="recipe-editor" aria-labelledby="editor-title">
-              <h3 id="editor-title" data-form-title>Add a recipe</h3>
-              <form data-recipe-form>
-                <label><span data-i18n="editor.title">Title</span><input name="title" required /></label>
-                <label><span data-i18n="editor.servings">Servings</span><input name="servings" type="number" min="1" step="1" required /></label>
-                <label><span data-i18n="editor.ingredients">Ingredients, one per line</span><textarea name="ingredients" rows="4" required></textarea></label>
-                <label><span data-i18n="editor.steps">Steps, one per line</span><textarea name="steps" rows="4" required></textarea></label>
+
+            <details class="manage-recipes">
+              <summary data-i18n="editor.manage">Manage recipes</summary>
+              <section class="recipe-editor" aria-labelledby="editor-title">
+                <h3 id="editor-title" data-form-title>Add a recipe</h3>
+                <form data-recipe-form>
+                  <label><span data-i18n="editor.title">Title</span><input name="title" required /></label>
+                  <label><span data-i18n="editor.servings">Servings</span><input name="servings" type="number" min="1" step="1" required /></label>
+                  <label><span data-i18n="editor.ingredients">Ingredients, one per line</span><textarea name="ingredients" rows="4" required></textarea></label>
+                  <label><span data-i18n="editor.steps">Steps, one per line</span><textarea name="steps" rows="4" required></textarea></label>
+                  <div class="card-actions">
+                    <button class="primary-button" type="submit" data-i18n="actions.save">Save recipe</button>
+                    <button type="button" data-cancel-edit hidden>Cancel</button>
+                  </div>
+                </form>
+              </section>
+              <section class="data-tools" aria-labelledby="data-title">
+                <h3 id="data-title" data-i18n="data.title">Local data</h3>
                 <div class="card-actions">
-                  <button class="primary-button" type="submit" data-i18n="actions.save">Save recipe</button>
-                  <button type="button" data-cancel-edit hidden>Cancel</button>
+                  <a class="button-link" data-export data-i18n="actions.export">Export JSON</a>
+                  <label class="button-link file-button"><span data-i18n="actions.import">Import JSON</span><input id="import-data" type="file" accept="application/json,.json" /></label>
+                  <button type="button" data-clear data-i18n="actions.clear">Clear all</button>
                 </div>
-              </form>
-            </section>
-            <section class="data-tools" aria-labelledby="data-title">
-              <h3 id="data-title" data-i18n="data.title">Local data</h3>
-              <div class="card-actions">
-                <a class="button-link" data-export data-i18n="actions.export">Export JSON</a>
-                <label class="button-link file-button"><span data-i18n="actions.import">Import JSON</span><input id="import-data" type="file" accept="application/json,.json" /></label>
-                <button type="button" data-clear data-i18n="actions.clear">Clear all</button>
-              </div>
-              <p class="data-status" role="status" aria-live="polite" data-data-status></p>
-            </section>
+                <p class="data-status" role="status" aria-live="polite" data-data-status></p>
+              </section>
+            </details>
           </div>
           <p class="local-note" data-i18n="library.local">Private by design · stored locally</p>
-        </section>
+        </aside>
       </main>
 
       <footer class="site-footer">
