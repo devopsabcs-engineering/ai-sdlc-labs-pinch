@@ -46,6 +46,16 @@
     "emptyTitle": "No recipe selected",
     "empty": "Add or import a recipe to begin."
   },
+  "shopping": {
+    "eyebrow": "Shopping list",
+    "title": "Shopping list ({count})",
+    "empty": "Add ingredients from the recipe.",
+    "add": "Add {count} ingredients",
+    "added": "{count} ingredients added for {servings} servings",
+    "collected": "{checked} of {count} collected",
+    "clearChecked": "Clear checked",
+    "cleared": "{count} checked items cleared"
+  },
   "editor": {
     "addTitle": "Add a recipe",
     "editTitle": "Edit recipe",

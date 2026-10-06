@@ -9,6 +9,7 @@ import {
   type Recipe,
 } from "./data";
 import type { Preferences } from "./preferences";
+import type { ShoppingItem } from "./shopping";
 
 const preferences: Preferences = {
   locale: "en",
@@ -75,6 +76,32 @@ describe("local recipe data", () => {
 
     const reloaded = RecipeRepository.open(storage, createInitialData(preferences));
     expect(reloaded.ok && reloaded.value.snapshot().recipes).toHaveLength(3);
+  });
+
+  it("persists shopping checklist state across repository reloads", () => {
+    const storage = memoryStorage();
+    const opened = RecipeRepository.open(storage, createInitialData(preferences));
+    if (!opened.ok) throw new Error("open failed");
+    const items: ShoppingItem[] = [
+      {
+        id: "shopping-1",
+        name: "flour",
+        mergeKey: "flour|mass|g",
+        quantity: 500,
+        unit: "g",
+        checked: true,
+      },
+      {
+        id: "shopping-2",
+        name: "salt to taste",
+        originalText: "salt to taste",
+        checked: false,
+      },
+    ];
+
+    expect(opened.value.updateShoppingItems(items).ok).toBe(true);
+    const reloaded = RecipeRepository.open(storage, createInitialData(preferences));
+    expect(reloaded.ok && reloaded.value.snapshot().shoppingItems).toEqual(items);
   });
 
   it("exports versioned JSON and atomically imports valid data", () => {

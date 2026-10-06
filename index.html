@@ -58,13 +58,37 @@
 
           <h2 data-i18n="recipe.ingredients">Ingredients</h2>
           <ul class="ingredient-list" data-ingredient-list></ul>
+          <div class="recipe-actions">
+            <button class="primary-button" type="button" data-add-shopping>
+              Add ingredients to shopping list
+            </button>
+          </div>
           <p class="recipe-status" role="status" aria-live="polite" aria-atomic="true" data-recipe-status></p>
         </section>
 
-        <aside class="shell-panel library-panel" aria-labelledby="library-title">
+        <aside class="shell-panel library-panel" aria-labelledby="shopping-title">
           <div>
-            <p class="eyebrow" data-i18n="library.eyebrow">Recipe library</p>
-            <h2 id="library-title" data-i18n="library.title">Your recipes</h2>
+            <section class="shopping-panel" aria-labelledby="shopping-title">
+              <p class="eyebrow" data-i18n="shopping.eyebrow">Shopping list</p>
+              <h2 id="shopping-title" data-shopping-title>Shopping list (0)</h2>
+              <p class="shopping-empty" data-shopping-empty>
+                Add ingredients from the recipe.
+              </p>
+              <ul class="shopping-list" data-shopping-list></ul>
+              <button type="button" data-clear-checked disabled>Clear checked</button>
+              <p
+                class="shopping-status"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                data-shopping-status
+              ></p>
+            </section>
+
+            <div class="library-heading">
+              <p class="eyebrow" data-i18n="library.eyebrow">Recipe library</p>
+              <h2 id="library-title" data-i18n="library.title">Your recipes</h2>
+            </div>
             <div class="recipe-list" data-recipe-list></div>
 
             <details class="manage-recipes">

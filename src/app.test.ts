@@ -19,8 +19,14 @@ const shell = `
       <button type="button" data-unit="metric"></button>
       <button type="button" data-unit="imperial"></button>
       <ul data-ingredient-list></ul>
+      <button type="button" data-add-shopping></button>
       <p data-recipe-status></p>
     </section>
+    <h2 data-shopping-title></h2>
+    <p data-shopping-empty></p>
+    <ul data-shopping-list></ul>
+    <button type="button" data-clear-checked></button>
+    <p data-shopping-status></p>
     <div data-recipe-list></div>
     <form data-recipe-form>
       <h2 data-form-title></h2>
@@ -213,6 +219,42 @@ describe("application shell", () => {
       "Réduire le nombre de portions",
     );
     expect(document.querySelector("[data-ingredient-list]")?.textContent).toContain("farine");
+  });
+
+  it("adds the scaled recipe to a persistent checklist and clears only checked items", () => {
+    const storage = memoryStorage();
+    let id = 0;
+    startApp(document.querySelector<HTMLElement>("#app")!, {
+      storage,
+      languages: ["en"],
+      prefersDark: false,
+      createId: () => `shopping-${++id}`,
+    });
+    document.querySelector<HTMLButtonElement>("[data-increase]")!.click();
+    document.querySelector<HTMLButtonElement>("[data-add-shopping]")!.click();
+
+    const saved = JSON.parse(storage.getItem(APP_DATA_KEY)!);
+    expect(saved.shoppingItems).toHaveLength(3);
+    expect(saved.shoppingItems[0]).toMatchObject({
+      name: "flour",
+      unit: "mL",
+      quantity: 295.735295625,
+    });
+
+    const first = document.querySelector<HTMLInputElement>("[data-shopping-id]")!;
+    first.click();
+    expect(JSON.parse(storage.getItem(APP_DATA_KEY)!).shoppingItems[0].checked).toBe(true);
+    document.querySelector<HTMLButtonElement>("[data-clear-checked]")!.click();
+    expect(JSON.parse(storage.getItem(APP_DATA_KEY)!).shoppingItems).toHaveLength(2);
+
+    document.body.innerHTML = shell;
+    startApp(document.querySelector<HTMLElement>("#app")!, {
+      storage,
+      languages: ["en"],
+      prefersDark: false,
+      createId: () => `shopping-${++id}`,
+    });
+    expect(document.querySelectorAll("[data-shopping-id]")).toHaveLength(2);
   });
 });
 

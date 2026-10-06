@@ -1,5 +1,6 @@
 import type { Locale } from "./i18n";
 import type { Preferences } from "./preferences";
+import type { ShoppingItem } from "./shopping";
 
 export const APP_DATA_KEY = "pinch.app-data.v1";
 export const APP_DATA_VERSION = 1;
@@ -22,7 +23,7 @@ export interface Recipe {
 export interface AppData {
   version: typeof APP_DATA_VERSION;
   recipes: Recipe[];
-  shoppingItems: unknown[];
+  shoppingItems: ShoppingItem[];
   preferences: Preferences;
 }
 
@@ -127,6 +128,33 @@ function isRecipe(value: unknown): value is Recipe {
   );
 }
 
+function isShoppingItem(value: unknown): value is ShoppingItem {
+  if (typeof value !== "object" || value === null) return false;
+  const item = value as Partial<ShoppingItem>;
+  const parsed =
+    typeof item.mergeKey === "string" &&
+    item.mergeKey.length > 0 &&
+    typeof item.quantity === "number" &&
+    Number.isFinite(item.quantity) &&
+    item.quantity >= 0 &&
+    (item.unit === "g" || item.unit === "mL" || item.unit === "count") &&
+    item.originalText === undefined;
+  const unparsed =
+    item.mergeKey === undefined &&
+    item.quantity === undefined &&
+    item.unit === undefined &&
+    typeof item.originalText === "string" &&
+    item.originalText.length > 0;
+  return (
+    typeof item.id === "string" &&
+    item.id.length > 0 &&
+    typeof item.name === "string" &&
+    item.name.length > 0 &&
+    typeof item.checked === "boolean" &&
+    (parsed || unparsed)
+  );
+}
+
 export function isAppData(value: unknown): value is AppData {
   if (typeof value !== "object" || value === null) return false;
   const data = value as Partial<AppData>;
@@ -137,7 +165,13 @@ export function isAppData(value: unknown): value is AppData {
     data.recipes.every(isRecipe) &&
     new Set(data.recipes.map((recipe) => recipe.id)).size === data.recipes.length &&
     Array.isArray(data.shoppingItems) &&
-    data.shoppingItems.length === 0 &&
+    data.shoppingItems.every(isShoppingItem) &&
+    new Set(data.shoppingItems.map((item) => item.id)).size === data.shoppingItems.length &&
+    new Set(
+      data.shoppingItems
+        .map((item) => item.mergeKey)
+        .filter((key): key is string => key !== undefined),
+    ).size === data.shoppingItems.filter((item) => item.mergeKey !== undefined).length &&
     preferences !== undefined &&
     (preferences.locale === "en" || preferences.locale === "fr") &&
     (preferences.theme === "light" || preferences.theme === "dark") &&
@@ -215,6 +249,10 @@ export class RecipeRepository {
 
   updatePreferences(preferences: Preferences): DataResult<AppData> {
     return this.replace({ ...this.data, preferences: { ...preferences } });
+  }
+
+  updateShoppingItems(shoppingItems: ShoppingItem[]): DataResult<AppData> {
+    return this.replace({ ...this.data, shoppingItems: clone(shoppingItems) });
   }
 
   clear(): DataResult<AppData> {

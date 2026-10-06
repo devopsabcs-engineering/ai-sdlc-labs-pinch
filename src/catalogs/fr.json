@@ -46,6 +46,16 @@
     "emptyTitle": "Aucune recette sélectionnée",
     "empty": "Ajoutez ou importez une recette pour commencer."
   },
+  "shopping": {
+    "eyebrow": "Liste de courses",
+    "title": "Liste de courses ({count})",
+    "empty": "Ajoutez les ingrédients de la recette.",
+    "add": "Ajouter {count} ingrédients",
+    "added": "{count} ingrédients ajoutés pour {servings} portions",
+    "collected": "{checked} article(s) sur {count} ramassé(s)",
+    "clearChecked": "Effacer les articles cochés",
+    "cleared": "{count} articles cochés effacés"
+  },
   "editor": {
     "addTitle": "Ajouter une recette",
     "editTitle": "Modifier la recette",

@@ -15,6 +15,11 @@ import {
   scaleQuantity,
   type Unit,
 } from "./quantity";
+import {
+  addShoppingIngredients,
+  clearCheckedShoppingItems,
+  setShoppingItemChecked,
+} from "./shopping";
 
 interface BrowserServices {
   storage: DataStorage;
@@ -163,6 +168,19 @@ export function startApp(
   const unitButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-unit]")];
   const recipeStatus = root.querySelector<HTMLElement>("[data-recipe-status]");
   const measureFill = root.querySelector<HTMLElement>("[data-measure-fill]");
+  const addShoppingButton = root.querySelector<HTMLButtonElement>("[data-add-shopping]");
+  const shoppingTitle = root.querySelector<HTMLElement>("[data-shopping-title]");
+  const shoppingEmpty = root.querySelector<HTMLElement>("[data-shopping-empty]");
+  const shoppingList = root.querySelector<HTMLElement>("[data-shopping-list]");
+  const clearCheckedButton = root.querySelector<HTMLButtonElement>("[data-clear-checked]");
+  const shoppingStatus = root.querySelector<HTMLElement>("[data-shopping-status]");
+  const hasShoppingView =
+    addShoppingButton &&
+    shoppingTitle &&
+    shoppingEmpty &&
+    shoppingList &&
+    clearCheckedButton &&
+    shoppingStatus;
   const hasRecipeView =
     recipeTitle &&
     recipeYield &&
@@ -177,6 +195,14 @@ export function startApp(
   const announceFailure = (result: DataResult<unknown>): boolean => {
     if (result.ok) return false;
     dataStatus.textContent = translate(preferences.locale, `data.error.${result.error}`);
+    return true;
+  };
+
+  const announceShoppingFailure = (result: DataResult<unknown>): boolean => {
+    if (result.ok) return false;
+    const message = translate(preferences.locale, `data.error.${result.error}`);
+    dataStatus.textContent = message;
+    if (shoppingStatus) shoppingStatus.textContent = message;
     return true;
   };
 
@@ -196,6 +222,67 @@ export function startApp(
     return selected;
   };
 
+  const renderShopping = (focusId?: string): void => {
+    if (!hasShoppingView) return;
+    const items = repository?.snapshot().shoppingItems ?? [];
+    const ordered = [...items].sort((left, right) => Number(left.checked) - Number(right.checked));
+    shoppingTitle.textContent = translate(preferences.locale, "shopping.title", {
+      count: items.length,
+    });
+    shoppingEmpty.textContent = translate(preferences.locale, "shopping.empty");
+    shoppingEmpty.hidden = items.length > 0;
+    clearCheckedButton.textContent = translate(preferences.locale, "shopping.clearChecked");
+    clearCheckedButton.disabled = !items.some(({ checked }) => checked);
+    shoppingList.replaceChildren(
+      ...ordered.map((item) => {
+        const row = document.createElement("li");
+        if (item.checked) row.className = "is-checked";
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = item.checked;
+        checkbox.dataset.shoppingId = item.id;
+        checkbox.addEventListener("change", () => {
+          if (!repository) return;
+          const next = setShoppingItemChecked(
+            repository.snapshot().shoppingItems,
+            item.id,
+            checkbox.checked,
+          );
+          const result = repository.updateShoppingItems(next);
+          if (announceShoppingFailure(result)) {
+            checkbox.checked = item.checked;
+            return;
+          }
+          const checkedCount = next.filter((shoppingItem) => shoppingItem.checked).length;
+          shoppingStatus.textContent = translate(preferences.locale, "shopping.collected", {
+            checked: checkedCount,
+            count: next.length,
+          });
+          renderShopping(item.id);
+        });
+        const copy = document.createElement("span");
+        if (item.quantity !== undefined && item.unit) {
+          const unit = displayUnit(item.quantity, item.unit, preferences.unitSystem);
+          const converted = convertQuantity(item.quantity, item.unit, unit);
+          const amount =
+            converted === undefined ? "" : formatQuantity(converted, unit, preferences.locale);
+          copy.textContent = `${amount}${unit === "count" ? "" : ` ${unit}`} ${item.name}`.trim();
+        } else {
+          copy.textContent = item.originalText ?? item.name;
+        }
+        label.append(checkbox, copy);
+        row.append(label);
+        return row;
+      }),
+    );
+    if (focusId) {
+      [...shoppingList.querySelectorAll<HTMLInputElement>("[data-shopping-id]")]
+        .find((checkbox) => checkbox.dataset.shoppingId === focusId)
+        ?.focus({ preventScroll: true });
+    }
+  };
+
   const renderRecipe = (): void => {
     if (!hasRecipeView) return;
     const recipe = selectedRecipe();
@@ -205,6 +292,7 @@ export function startApp(
       ingredientList.replaceChildren();
       decreaseButton.disabled = true;
       increaseButton.disabled = true;
+      if (addShoppingButton) addShoppingButton.disabled = true;
       return;
     }
 
@@ -223,6 +311,12 @@ export function startApp(
     decreaseButton.disabled = servings <= 1;
     decreaseButton.setAttribute("aria-label", translate(preferences.locale, "recipe.decrease"));
     increaseButton.setAttribute("aria-label", translate(preferences.locale, "recipe.increase"));
+    if (addShoppingButton) {
+      addShoppingButton.disabled = false;
+      addShoppingButton.textContent = translate(preferences.locale, "shopping.add", {
+        count: recipe.ingredients.length,
+      });
+    }
     measureFill.style.width = `${Math.min(100, Math.max(12, (servings / recipe.baseServings) * 42))}%`;
 
     for (const button of unitButtons) {
@@ -405,6 +499,7 @@ export function startApp(
     exportLink.setAttribute("download", "pinch-data.json");
     renderRecipes();
     renderRecipe();
+    renderShopping();
   };
 
   const updatePreferences = (next: Preferences, announcement: string): void => {
@@ -478,6 +573,40 @@ export function startApp(
       }
     });
   }
+
+  addShoppingButton?.addEventListener("click", () => {
+    const recipe = selectedRecipe();
+    if (!repository || !recipe) return;
+    const servings = targetServings ?? recipe.baseServings;
+    const next = addShoppingIngredients(
+      repository.snapshot().shoppingItems,
+      recipe.ingredients.map((ingredient) => ({
+        text: localize(ingredient, preferences.locale),
+        baseServings: recipe.baseServings,
+        targetServings: servings,
+      })),
+      services.createId ?? (() => crypto.randomUUID()),
+    );
+    const result = repository.updateShoppingItems(next);
+    if (announceShoppingFailure(result)) return;
+    shoppingStatus!.textContent = translate(preferences.locale, "shopping.added", {
+      count: recipe.ingredients.length,
+      servings,
+    });
+    renderShopping();
+  });
+
+  clearCheckedButton?.addEventListener("click", () => {
+    if (!repository) return;
+    const current = repository.snapshot().shoppingItems;
+    const checkedCount = current.filter(({ checked }) => checked).length;
+    const result = repository.updateShoppingItems(clearCheckedShoppingItems(current));
+    if (announceShoppingFailure(result)) return;
+    shoppingStatus!.textContent = translate(preferences.locale, "shopping.cleared", {
+      count: checkedCount,
+    });
+    renderShopping();
+  });
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
