@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Pinch is a private, bilingual recipe companion."
+      data-i18n-content="meta.description"
+    />
+    <title>Pinch — Recipe companion</title>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content" data-i18n="shell.skip">Skip to content</a>
+    <div id="app">
+      <header class="site-header">
+        <div class="header-inner">
+          <a class="brand" href="#" aria-label="Pinch">PINCH</a>
+          <div class="preferences" role="group" aria-label="Preferences" data-i18n-aria="prefs.group">
+            <button class="quiet-button" id="locale-toggle" type="button">FR</button>
+            <button class="quiet-button theme-button" id="theme-toggle" type="button">
+              <span aria-hidden="true">◐</span>
+              <span data-theme-label>Dark theme</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main id="main-content" class="workspace" tabindex="-1">
+        <section class="welcome" aria-labelledby="page-title">
+          <p class="eyebrow" data-i18n="welcome.eyebrow">Recipe companion</p>
+          <h1 id="page-title" data-i18n="welcome.title">Your kitchen, measured.</h1>
+          <div class="measure-rule" aria-hidden="true"><span></span></div>
+          <p class="lede" data-i18n="welcome.body">
+            Scale recipes, shop, and cook in English or French. Your recipes stay on this device.
+          </p>
+        </section>
+
+        <section class="shell-panel" aria-labelledby="library-title">
+          <div>
+            <p class="eyebrow" data-i18n="library.eyebrow">Recipe library</p>
+            <h2 id="library-title" data-i18n="library.title">Recipes will live here</h2>
+            <p data-i18n="library.empty">Your saved and sample recipes will appear in this space.</p>
+          </div>
+          <p class="local-note" data-i18n="library.local">Private by design · stored locally</p>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p data-i18n="footer.note">No account. No tracking. Just cooking.</p>
+      </footer>
+      <p class="sr-only" role="status" aria-live="polite" data-preference-status></p>
+    </div>
+    <noscript>Pinch requires JavaScript to manage your local preferences.</noscript>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "title": "Pinch — Compagnon de recettes",
+    "description": "Pinch est un compagnon de recettes privé et bilingue."
+  },
+  "shell": {
+    "skip": "Aller au contenu"
+  },
+  "prefs": {
+    "group": "Préférences",
+    "switchTo": "Switch to English",
+    "dark": "Thème sombre",
+    "light": "Thème clair",
+    "localeChanged": "Langue changée pour le français",
+    "themeChangedDark": "Thème sombre sélectionné",
+    "themeChangedLight": "Thème clair sélectionné"
+  },
+  "welcome": {
+    "eyebrow": "Compagnon de recettes",
+    "title": "Votre cuisine, bien mesurée.",
+    "body": "Adaptez vos recettes, magasinez et cuisinez en français ou en anglais. Vos recettes restent sur cet appareil."
+  },
+  "library": {
+    "eyebrow": "Livre de recettes",
+    "title": "Vos recettes seront ici",
+    "empty": "Vos recettes enregistrées et nos exemples apparaîtront dans cet espace.",
+    "local": "Privé par conception · stocké localement"
+  },
+  "footer": {
+    "note": "Sans compte. Sans suivi. Que de la cuisine."
+  }
+}

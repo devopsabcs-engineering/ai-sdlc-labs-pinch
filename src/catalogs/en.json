@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "title": "Pinch — Recipe companion",
+    "description": "Pinch is a private, bilingual recipe companion."
+  },
+  "shell": {
+    "skip": "Skip to content"
+  },
+  "prefs": {
+    "group": "Preferences",
+    "switchTo": "Passer au français",
+    "dark": "Dark theme",
+    "light": "Light theme",
+    "localeChanged": "Language changed to English",
+    "themeChangedDark": "Dark theme selected",
+    "themeChangedLight": "Light theme selected"
+  },
+  "welcome": {
+    "eyebrow": "Recipe companion",
+    "title": "Your kitchen, measured.",
+    "body": "Scale recipes, shop, and cook in English or French. Your recipes stay on this device."
+  },
+  "library": {
+    "eyebrow": "Recipe library",
+    "title": "Recipes will live here",
+    "empty": "Your saved and sample recipes will appear in this space.",
+    "local": "Private by design · stored locally"
+  },
+  "footer": {
+    "note": "No account. No tracking. Just cooking."
+  }
+}
